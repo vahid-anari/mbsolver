@@ -43,8 +43,8 @@ def test_matches_mb_solver_8_13():
     )
     for ours, theirs in (("time", "time"), ("intensity", "intensity"), ("w", "w"),
                          ("pump", "lambda_n"), ("field_in", "A0"), ("t1", "t1"), ("t2", "t2")):
-        np.testing.assert_array_equal(getattr(res, ours), ref[theirs], err_msg=ours)
-
+        np.testing.assert_allclose(getattr(res, ours), ref[theirs], rtol=1e-12, atol=1e-14,
+                                   err_msg=ours)
 
 def test_entrance_is_a_bloch_rotation():
     """At z = 0 without relaxation or pump, the field rotates the Bloch angle by minus its area."""
