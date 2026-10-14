@@ -6,3 +6,4 @@ build/
 *.nbi
 *.nbc
 .DS_Store
+.idea/
