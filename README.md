@@ -1,0 +1,89 @@
+# maxbloch
+
+Fast Maxwell-Bloch solvers in Python (numpy + numba) for astrophysical masers,
+superradiance and coherent pulse propagation. Use them from scripts,
+notebooks or cluster jobs; the
+[Maxwell Bloch Solver](https://github.com/vahid-anari/maxwell-bloch-solver)
+desktop app runs on the same code.
+
+```
+pip install maxbloch
+```
+
+## Two-level model in one dimension
+
+Dimensionless equations for the population inversion `w`, the coherence `R`
+and the field `A` along a medium `0 ≤ z ≤ 1`:
+
+```
+dw/dt = A R − (w − w0) / T1 + Λ(t)
+dR/dt = −A w − (R − R0) / T2
+dA/dz = −η R
+```
+
+The field `A(t)` entering at `z = 0` is given; population and coherence are
+advanced with fourth-order Runge-Kutta in time, the field step by step in `z`.
+
+```python
+import matplotlib.pyplot as plt
+from maxbloch import Pulse, Steps
+from maxbloch.two_level import solve_1d
+
+res = solve_1d(
+    t_max=300, nt=3001, nz=121, eta=40.0,
+    theta0=0.003,                                  # or w0=..., R0=...
+    pump=[Pulse(a=[2e-3, 1e-3], x0=[60, 180], w=[15, 25])],
+    field_in=Pulse(a=1e-3, x0=30, w=5),            # A(t) at z = 0
+    t1=Steps(y=[80, 40, 60], x0=[100, 200], w=[10, 0]),
+    t2=5.0,
+    n_planes=7,                                    # stored z planes, 0 ... 1
+)
+
+plt.plot(res.time, res.intensity[-1])              # intensity leaving the medium
+plt.show()
+```
+
+### Arguments
+
+| Argument | Meaning |
+|----------|---------|
+| `t_max`, `nt` | time grid from 0 to `t_max` with `nt` points |
+| `nz` | number of z points |
+| `eta` | coupling coefficient η |
+| `theta0`, or `w0` and `R0` | initial state (`w0 = cos θ0`, `R0 = sin θ0`); the medium also relaxes towards it |
+| `t1`, `t2` | relaxation times: a number or `Steps` (> 0, `math.inf` for none) |
+| `pump` | Λ(t): a `Pulse`, a number, or a list of them (summed) |
+| `field_in` | A(t) at z = 0: a `Pulse`, a number, or `None` |
+| `n_planes` | number of evenly spaced z planes returned (default 2: entrance and exit) |
+
+### Result
+
+`res.time`, `res.z` (positions of the stored planes), `res.intensity` and
+`res.w` (shape `(n_planes, nt)`), `res.pump`, `res.field_in`, `res.t1`, `res.t2`.
+
+## Profiles
+
+`Pulse(a, x0, w)` is a sum of sech² pulses, `a_i sech²((t − x0_i) / w_i)`.
+Give `wl` and `wr` instead of `w` for a different width on each side.
+
+`Steps(y, x0, w)` goes from level `y[0]` to `y[1]` around `x0[0]`, then to
+`y[2]` around `x0[1]`, and so on, each step smoothed as `(1 + tanh)/2` with
+width `w` (0 for a sharp step). `x0` and `w` have one value fewer than `y`.
+
+A zero width gives a single point (pulse) or a sharp step; an infinite width
+a constant. `profile.evaluate(t)` returns the values on any grid.
+
+## Tests
+
+```
+pip install -e ".[dev]"
+pytest
+```
+
+The tests include a reference run that must match the Maxwell Bloch Solver
+app exactly, and physics checks (Bloch rotation at the entrance, relaxation
+balance, uncoupled propagation).
+
+## License
+
+MIT

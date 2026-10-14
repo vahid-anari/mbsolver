@@ -1,0 +1,123 @@
+{
+ "solve.grid.nt": 3001,
+ "solve.grid.nz": 121,
+ "solve.grid.t_max": 300.0,
+ "solve.sample": {
+  "theta0": 0.003,
+  "eta": 40.0
+ },
+ "solve.ics": {
+  "use_theta0": true,
+  "w0": 1.0,
+  "R0": 0.0
+ },
+ "solve.pump.pulse1": {
+  "symmetric": true,
+  "a": [
+   0.002,
+   0.001
+  ],
+  "x0": [
+   60.0,
+   180.0
+  ],
+  "w": [
+   15.0,
+   25.0
+  ],
+  "wl": [
+   1.0,
+   1.0
+  ],
+  "wr": [
+   1.0,
+   1.0
+  ]
+ },
+ "solve.pump.pulse2": {
+  "symmetric": false,
+  "a": [
+   0.0005
+  ],
+  "x0": [
+   120.0
+  ],
+  "w": [
+   1.0
+  ],
+  "wl": [
+   5.0
+  ],
+  "wr": [
+   40.0
+  ]
+ },
+ "solve.pump.pulse3": {
+  "symmetric": true,
+  "a": [
+   0.0001
+  ],
+  "x0": [
+   0.0
+  ],
+  "w": [
+   Infinity
+  ],
+  "wl": [
+   1.0
+  ],
+  "wr": [
+   1.0
+  ]
+ },
+ "solve.bcs": {
+  "symmetric": true,
+  "a": [
+   0.001
+  ],
+  "x0": [
+   30.0
+  ],
+  "w": [
+   5.0
+  ],
+  "wl": [
+   1.0
+  ],
+  "wr": [
+   1.0
+  ]
+ },
+ "solve.t1": {
+  "symmetric": true,
+  "y": [
+   80.0,
+   40.0,
+   60.0
+  ],
+  "x0": [
+   0.0,
+   100.0,
+   200.0
+  ],
+  "w": [
+   0.0,
+   10.0,
+   0.0
+  ],
+  "wl": [
+   0,
+   0,
+   0
+  ],
+  "wr": [
+   0,
+   0,
+   0
+  ]
+ },
+ "solve.t2": 5.0,
+ "slice.z": {
+  "arr_length": 7
+ }
+}
