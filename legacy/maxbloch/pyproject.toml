@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maxbloch"
+version = "0.1.1"
+description = "Renamed to mbsolver: pip install mbsolver"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Vahid Anari", email = "vahid.anari8@gmail.com" }]
+classifiers = ["Development Status :: 7 - Inactive"]
+dependencies = ["numpy>=1.24", "numba>=0.58"]
+
+[project.urls]
+Homepage = "https://github.com/vahid-anari/mbsolver"
+
+[tool.setuptools.packages.find]
+where = ["src"]

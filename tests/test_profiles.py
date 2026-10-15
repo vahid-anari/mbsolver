@@ -5,7 +5,7 @@ import math
 import numpy as np
 import pytest
 
-from maxbloch import Pulse, Steps
+from mbsolver import Pulse, Steps
 
 X = np.linspace(-10, 10, 201)
 

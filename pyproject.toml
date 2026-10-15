@@ -3,8 +3,8 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "maxbloch"
-version = "0.1.0"
+name = "mbsolver"
+version = "0.2.0"
 description = "Fast Maxwell-Bloch solvers for masers, superradiance and coherent pulse propagation"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -36,9 +36,9 @@ dependencies = [
 dev = ["build", "twine", "pytest"]
 
 [project.urls]
-Homepage = "https://github.com/vahid-anari/maxbloch"
-Repository = "https://github.com/vahid-anari/maxbloch"
-Issues = "https://github.com/vahid-anari/maxbloch/issues"
+Homepage = "https://github.com/vahid-anari/mbsolver"
+Repository = "https://github.com/vahid-anari/mbsolver"
+Issues = "https://github.com/vahid-anari/mbsolver/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

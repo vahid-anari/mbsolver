@@ -1,4 +1,4 @@
-"""Tests for maxbloch.two_level.solve_1d."""
+"""Tests for mbsolver.two_level.solve_1d."""
 
 import json
 import math
@@ -7,8 +7,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from maxbloch import Pulse, Steps
-from maxbloch.two_level import solve_1d
+from mbsolver import Pulse, Steps
+from mbsolver.two_level import solve_1d
 
 DATA = Path(__file__).parent / "data"
 

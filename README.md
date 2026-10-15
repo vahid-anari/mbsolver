@@ -1,13 +1,13 @@
-# maxbloch
+# mbsolver
 
 Fast Maxwell-Bloch solvers in Python (numpy + numba) for astrophysical masers,
 superradiance and coherent pulse propagation. Use them from scripts,
 notebooks or cluster jobs; the
-[Maxwell Bloch Solver](https://github.com/vahid-anari/maxwell-bloch-solver)
+[Maxwell Bloch Studio](https://github.com/vahid-anari/maxwell-bloch-studio)
 desktop app runs on the same code.
 
 ```
-pip install maxbloch
+pip install mbsolver
 ```
 
 ## Two-level model in one dimension
@@ -26,8 +26,8 @@ advanced with fourth-order Runge-Kutta in time, the field step by step in `z`.
 
 ```python
 import matplotlib.pyplot as plt
-from maxbloch import Pulse, Steps
-from maxbloch.two_level import solve_1d
+from mbsolver import Pulse, Steps
+from mbsolver.two_level import solve_1d
 
 res = solve_1d(
     t_max=300, nt=3001, nz=121, eta=40.0,
@@ -80,9 +80,16 @@ pip install -e ".[dev]"
 pytest
 ```
 
-The tests include a reference run that must match the Maxwell Bloch Solver
-app exactly, and physics checks (Bloch rotation at the entrance, relaxation
-balance, uncoupled propagation).
+The tests include a reference run that must match the solver of the Maxwell
+Bloch app (version 8.13) exactly, and physics checks (Bloch rotation at the
+entrance, relaxation balance, uncoupled propagation).
+
+## Earlier name
+
+Up to 0.1.0 this package was called `maxbloch`; 0.2.0 is the same code under
+the new name. `maxbloch` stays on PyPI unchanged (0.1.1 only adds a
+deprecation warning) but gets no updates; change `maxbloch` to `mbsolver` in
+your imports.
 
 ## License
 
