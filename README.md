@@ -61,6 +61,29 @@ plt.show()
 `res.time`, `res.z` (positions of the stored planes), `res.intensity` and
 `res.w` (shape `(n_planes, nt)`), `res.pump`, `res.field_in`, `res.t1`, `res.t2`.
 
+## From physical values: `scaling`
+
+The solvers take dimensionless parameters. `scaling` computes them from the
+physical sample values (SI units): transition frequency `nu` (Hz), spontaneous
+decay rate `gamma` (s⁻¹), time unit `t0` (s), length `l` (m) and inverted
+population density `n0` (m⁻³).
+
+```python
+import math
+import mbsolver
+from mbsolver.two_level import solve_1d
+
+s = mbsolver.scaling(nu=6.67e9, gamma=1.56e-9, t0=86400, l=7.5e12, n0=5.3e-7)
+res = solve_1d(t_max=2000, nt=20001, nz=101, eta=s["eta"], theta0=s["theta0"],
+               t1=math.inf, t2=math.inf)
+```
+
+Besides `eta` (η = T₀/T_R) and `theta0` (θ₀ = 2/√N), the result holds `t_r`,
+`N`, `omega`, `lambda`, `k`, `lambda0` (Λ₀ = 1/T₀) and the field, polarization
+and intensity scales for an electric dipole (`d`, `e0`, `p0`, `i0_electric`)
+and a magnetic dipole (`mu`, `b0`, `m0`, `i0_magnetic`). Times in the solver
+are in units of `t0`.
+
 ## Profiles
 
 `Pulse(a, x0, w)` is a sum of sech² pulses, `a_i sech²((t − x0_i) / w_i)`.
@@ -82,7 +105,8 @@ pytest
 
 The tests include a reference run that must match the solver of the Maxwell
 Bloch app (version 8.13) exactly, and physics checks (Bloch rotation at the
-entrance, relaxation balance, uncoupled propagation).
+entrance, relaxation balance, uncoupled propagation). `scaling` is checked
+against the values of Maxwell Bloch Studio.
 
 ## Earlier name
 
