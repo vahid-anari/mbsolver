@@ -1,5 +1,9 @@
 # mbsolver
 
+[![tests](https://github.com/vahid-anari/mbsolver/actions/workflows/tests.yml/badge.svg)](https://github.com/vahid-anari/mbsolver/actions/workflows/tests.yml)
+[![PyPI](https://img.shields.io/pypi/v/mbsolver)](https://pypi.org/project/mbsolver/)
+[![Python](https://img.shields.io/pypi/pyversions/mbsolver)](https://pypi.org/project/mbsolver/)
+
 Fast Maxwell-Bloch solvers in Python (numpy + numba) for astrophysical masers,
 superradiance and coherent pulse propagation. Use them from scripts,
 notebooks or cluster jobs; the
