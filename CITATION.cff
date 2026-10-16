@@ -9,6 +9,7 @@ authors:
 version: 0.3.1
 date-released: 2026-10-15
 license: MIT
+doi: 10.5281/zenodo.23407483
 repository-code: "https://github.com/vahid-anari/mbsolver"
 url: "https://pypi.org/project/mbsolver/"
 abstract: >-

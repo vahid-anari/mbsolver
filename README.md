@@ -3,6 +3,7 @@
 [![tests](https://github.com/vahid-anari/mbsolver/actions/workflows/tests.yml/badge.svg)](https://github.com/vahid-anari/mbsolver/actions/workflows/tests.yml)
 [![PyPI](https://img.shields.io/pypi/v/mbsolver)](https://pypi.org/project/mbsolver/)
 [![Python](https://img.shields.io/pypi/pyversions/mbsolver)](https://pypi.org/project/mbsolver/)
+[![DOI](https://zenodo.org/badge/1419865034.svg)](https://doi.org/10.5281/zenodo.23407483)
 
 Fast Maxwell-Bloch solvers in Python (numpy + numba) for astrophysical masers,
 superradiance and coherent pulse propagation. Use them from scripts,
@@ -121,9 +122,15 @@ your imports.
 
 ## Citing
 
-If you use mbsolver in published work, please cite it. The GitHub page has a
-**Cite this repository** button (from [`CITATION.cff`](https://github.com/vahid-anari/mbsolver/blob/main/CITATION.cff)),
-and each release has its own DOI on Zenodo; cite the version you used.
+If you use mbsolver in published work, please cite it:
+
+> Anari, V. *mbsolver: Fast Maxwell-Bloch solvers for masers, superradiance and
+> coherent pulse propagation*. Zenodo. https://doi.org/10.5281/zenodo.23407483
+
+This DOI always points to the latest version. Each release also has its own
+DOI (for 0.3.1: [10.5281/zenodo.23407484](https://doi.org/10.5281/zenodo.23407484));
+cite the version you used, which you find under *Versions* on the Zenodo page.
+GitHub's **Cite this repository** button gives the same in BibTeX and APA.
 
 ## License
 
