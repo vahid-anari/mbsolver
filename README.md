@@ -119,6 +119,12 @@ the new name. `maxbloch` stays on PyPI unchanged (0.1.1 only adds a
 deprecation warning) but gets no updates; change `maxbloch` to `mbsolver` in
 your imports.
 
+## Citing
+
+If you use mbsolver in published work, please cite it. The GitHub page has a
+**Cite this repository** button (from [`CITATION.cff`](https://github.com/vahid-anari/mbsolver/blob/main/CITATION.cff)),
+and each release has its own DOI on Zenodo; cite the version you used.
+
 ## License
 
 MIT

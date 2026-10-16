@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "mbsolver: Fast Maxwell-Bloch solvers for masers, superradiance and coherent pulse propagation"
+type: software
+authors:
+  - family-names: Anari
+    given-names: Vahid
+    orcid: "https://orcid.org/0000-0002-2464-3989"
+version: 0.3.1
+date-released: 2026-10-15
+license: MIT
+repository-code: "https://github.com/vahid-anari/mbsolver"
+url: "https://pypi.org/project/mbsolver/"
+abstract: >-
+  Fast Maxwell-Bloch solvers in Python (numpy + numba) for astrophysical
+  masers, superradiance and coherent pulse propagation: a one-dimensional
+  two-level model with pump and boundary-field profiles, relaxation-time
+  schedules, and the scaling from physical sample values to the solver's
+  dimensionless parameters.
+keywords:
+  - Maxwell-Bloch equations
+  - masers
+  - superradiance
+  - astrophysics
+  - numerical simulation
