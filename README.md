@@ -3,7 +3,7 @@
 [![tests](https://github.com/vahid-anari/mbsolver/actions/workflows/tests.yml/badge.svg)](https://github.com/vahid-anari/mbsolver/actions/workflows/tests.yml)
 [![PyPI](https://img.shields.io/pypi/v/mbsolver)](https://pypi.org/project/mbsolver/)
 [![Python](https://img.shields.io/pypi/pyversions/mbsolver)](https://pypi.org/project/mbsolver/)
-[![DOI](https://zenodo.org/badge/1419865034.svg)](https://doi.org/10.5281/zenodo.23407483)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23407483.svg)](https://doi.org/10.5281/zenodo.23407483)
 
 Fast Maxwell-Bloch solvers in Python (numpy + numba) for astrophysical masers,
 superradiance and coherent pulse propagation. Use them from scripts,
