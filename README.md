@@ -4,6 +4,7 @@
 [![PyPI](https://img.shields.io/pypi/v/mbsolver)](https://pypi.org/project/mbsolver/)
 [![Python](https://img.shields.io/pypi/pyversions/mbsolver)](https://pypi.org/project/mbsolver/)
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.23407483-blue)](https://doi.org/10.5281/zenodo.23407483)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 Fast Maxwell-Bloch solvers in Python (numpy + numba) for astrophysical masers,
 superradiance and coherent pulse propagation. Use them from scripts,
@@ -11,9 +12,13 @@ notebooks or cluster jobs; the
 [Maxwell Bloch Studio](https://github.com/vahid-anari/maxwell-bloch-studio)
 desktop app runs on the same code.
 
+## Installation
+
 ```
 pip install mbsolver
 ```
+
+Requires Python 3.10+ (numpy and numba are installed with it).
 
 ## Two-level model in one dimension
 
@@ -101,7 +106,7 @@ width `w` (0 for a sharp step). `x0` and `w` have one value fewer than `y`.
 A zero width gives a single point (pulse) or a sharp step; an infinite width
 a constant. `profile.evaluate(t)` returns the values on any grid.
 
-## Tests
+## Development
 
 ```
 pip install -e ".[dev]"
@@ -112,6 +117,11 @@ The tests include a reference run that must match the solver of the Maxwell
 Bloch app (version 8.13) exactly, and physics checks (Bloch rotation at the
 entrance, relaxation balance, uncoupled propagation). `scaling` is checked
 against the values of Maxwell Bloch Studio.
+
+What changed in each version is in [`CHANGELOG.md`](CHANGELOG.md). Pushing a
+tag `vX.Y.Z` publishes a GitHub Release with that version's section of the
+changelog, and Zenodo gives it a DOI; update `version` and `date-released` in
+`CITATION.cff` before tagging.
 
 ## Earlier name
 
@@ -134,4 +144,14 @@ GitHub's **Cite this repository** button gives the same in BibTeX and APA.
 
 ## License
 
-MIT
+MIT License. See [LICENSE](LICENSE).
+
+## Author
+
+Vahid Anari ·
+[GitHub](https://github.com/vahid-anari) ·
+[LinkedIn](https://www.linkedin.com/in/vahid-anari/)
+
+Related projects: [sciwidgets](https://github.com/vahid-anari/sciwidgets) ·
+[Maxwell Bloch Studio](https://github.com/vahid-anari/maxwell-bloch-studio) ·
+[linecat](https://github.com/vahid-anari/linecat)
