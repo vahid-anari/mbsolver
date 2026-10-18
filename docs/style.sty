@@ -1,0 +1,112 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{style}[2026/10/17 mbsolver documentation style]
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+\usepackage{parskip}
+\usepackage{bm}
+\usepackage{footmisc}
+\usepackage{tikz}
+\usepackage{hyperref}
+
+% ── Colours ───────────────────────────────────────────────────────────────────
+\definecolor{accent}{RGB}{30,90,160}
+\definecolor{notebg}{RGB}{240,248,255}
+\definecolor{noteborder}{RGB}{30,90,160}
+\definecolor{warnbg}{RGB}{255,248,220}
+\definecolor{warnborder}{RGB}{200,140,0}
+
+% ── Hyperref ──────────────────────────────────────────────────────────────────
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accent,
+    urlcolor=accent,
+    citecolor=accent,
+    pdftitle={\AppName -- \DocName},
+    pdfauthor={\AppAuthors},
+}
+
+% ── Section headings ──────────────────────────────────────────────────────────
+\titleformat{\section}
+  {\large\bfseries\color{accent}}{\thesection}{1em}{}[\titlerule]
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{accent}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% ── Header / footer ───────────────────────────────────────────────────────────
+\setlength{\headheight}{14.5pt}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textcolor{accent}{\small \AppName}}
+\lhead{\textcolor{gray}{\small \DocName}}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Boxes ─────────────────────────────────────────────────────────────────────
+\tcbuselibrary{breakable,skins}
+
+\newtcolorbox{notebox}{
+  enhanced,breakable,
+  colback=notebg,colframe=noteborder,
+  leftrule=4pt,rightrule=0pt,toprule=0pt,bottomrule=0pt,
+  arc=2pt,outer arc=2pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt,
+  fonttitle=\bfseries\small,title={Note},
+}
+
+\newtcolorbox{warnbox}{
+  enhanced,breakable,
+  colback=warnbg,colframe=warnborder,
+  leftrule=4pt,rightrule=0pt,toprule=0pt,bottomrule=0pt,
+  arc=2pt,outer arc=2pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt,
+  fonttitle=\bfseries\small,title={Important},
+}
+
+\newtcolorbox{resultbox}{
+  enhanced,breakable,
+  colback=notebg,colframe=accent,
+  leftrule=1pt,rightrule=1pt,toprule=1pt,bottomrule=1pt,
+  arc=4pt,outer arc=4pt,
+  left=10pt,right=10pt,top=6pt,bottom=6pt,
+}
+% ── Shared macros ─────────────────────────────────────────────────────────────
+\newcommand{\pderiv}[2]{\dfrac{\partial #1}{\partial #2}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+% ── Title page ────────────────────────────────────────────────────────────────
+% \DocTitlePage{<one-paragraph summary>}
+\newcommand{\DocTitlePage}[1]{%
+\begin{titlepage}
+  \centering
+  \vspace*{3cm}
+  {\Huge\bfseries\color{accent} \AppName}\\[0.5em]
+  {\large \DocName}\\[0.3em]
+  {\normalsize Version \AppVersion}\\[3cm]
+  {\large \AppAuthors}\\[0.4em]
+  \href{mailto:\AppEmail}{\texttt{\AppEmail}}\\[0.4em]
+  \href{\AppURL}{\texttt{\AppURL}}
+  \vfill
+  {\small\color{gray} #1}
+\end{titlepage}}
+
+% ── Closing line ──────────────────────────────────────────────────────────────
+\newcommand{\DocFooter}{%
+\vfill
+\begin{center}
+  \small\color{gray}
+  \AppName\ v\AppVersion \quad|\quad \AppAuthors \quad|\quad
+  \href{mailto:\AppEmail}{\AppEmail}
+\end{center}}

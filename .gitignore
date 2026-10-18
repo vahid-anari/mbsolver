@@ -7,3 +7,5 @@ build/
 *.nbc
 .DS_Store
 .idea/
+docs/build/
+docs/version.tex

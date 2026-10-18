@@ -4,6 +4,11 @@ Each version is a Git tag (`vX.Y.Z`) and is on [PyPI](https://pypi.org/project/m
 Pushing a tag publishes a GitHub Release with that version's notes, and Zenodo
 then gives the release its own DOI.
 
+## Unreleased
+
+- Model documents in `docs/`: `two_level.pdf` (moved from Maxwell Bloch Studio's equations reference) and `three_level.pdf` (derivation of the Λ model, initial conditions, scales, S255IR-NIRS3 values), built with `tools/build_docs.sh`. They replace the Word PDFs in `docs/three_level/`.
+- S255 example: exact `r2 = cot²(θ0/2)` and three-level density `n0`; same results.
+
 ## 0.4.0 — 2026-10-17
 
 - `mbsolver.three_level`: the Λ-type three-level model in one dimension (`solve_1d`), with `populations` (initial state from r1 = n3/n1, r2 = n3/n2) and `scaling` (d, ω, η, T₀, E₀, I₀, Λ₀ from the physical values of the two transitions). A reference test matches the 2025 three-level solver exactly.

@@ -25,10 +25,11 @@ HERE = Path(__file__).parent
 DAY = 86400.0
 
 # Sample: CH3OH 3→1 (239.7 GHz) and 3→2 (6.67 GHz)
-theta0 = 4.14e-10
+theta0 = 4.14e-10                                      # Bloch angle of the two-level fit
 r1 = 0.94
-r2 = (1 + np.cos(theta0)) ** 2 / theta0 ** 2          # 2.33e19
-n0 = 1.17e-6 * (1.0 / r1 + r2 / (r2 + 1.0))           # m⁻³
+r2 = 1.0 / np.tan(theta0 / 2) ** 2                    # (1 + cos θ0) / (1 − cos θ0) = 2.33e19
+n0_2level = 1.17e-6                                    # m⁻³, molecules in levels 2 and 3
+n0 = n0_2level * (r1 + r2 + r1 * r2) / (r1 * (1 + r2))  # m⁻³, all three levels
 s = scaling(nu31=239_746.219e6, nu32=6_668.564e6, d31=0.59425 * DEBYE,
             d32=0.67936 * DEBYE, l=2.1e13, n0=n0, gamma=1.56e-9)
 t0 = s["t0"]

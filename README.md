@@ -33,6 +33,8 @@ dA/dz = −η R
 
 The field `A(t)` entering at `z = 0` is given; population and coherence are
 advanced with fourth-order Runge-Kutta in time, the field step by step in `z`.
+The derivation from the two-level Hamiltonian is in
+[`docs/two_level.pdf`](docs/two_level.pdf).
 
 ```python
 import matplotlib.pyplot as plt
@@ -119,8 +121,9 @@ and the pump scale `lambda0 = n0/t0`. By default the decay rate of the 3→2
 line is the Einstein A computed from `d32`; pass `gamma=` to use a measured one.
 
 The three-level equations were derived and checked with Toktam Rashidi. The
-derivation, the final dimensionless equations, the initial conditions and the
-CH₃OH data are in [`docs/three_level/`](docs/three_level/);
+derivation, from the Hamiltonian to the dimensionless equations, with the
+initial conditions, physical scales and the S255IR-NIRS3 values, is in
+[`docs/three_level.pdf`](docs/three_level.pdf);
 [`examples/three_level/s255_flare.py`](examples/three_level/s255_flare.py)
 runs the S255IR-NIRS3 flare and plots it with the observed flux (needs
 matplotlib). The observations are from the Toruń 32 m telescope,
@@ -173,6 +176,10 @@ Bloch app (version 8.13) exactly, and physics checks (Bloch rotation at the
 entrance, relaxation balance, uncoupled propagation). The three-level model
 matches the 2025 three-level solver exactly for the S255IR-NIRS3 case. `scaling`
 is checked against the values of Maxwell Bloch Studio.
+
+The model documents `docs/two_level.pdf` and `docs/three_level.pdf` are built
+from their LaTeX sources with `sh tools/build_docs.sh` (needs LaTeX with
+`latexmk`); commit the rebuilt PDFs with the sources.
 
 What changed in each version is in [`CHANGELOG.md`](CHANGELOG.md). Pushing a
 tag `vX.Y.Z` publishes a GitHub Release with that version's section of the
