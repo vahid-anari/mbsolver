@@ -1,4 +1,8 @@
-#JD - 2,450,000	Stokes I
+# S255IR-NIRS3, 6.7 GHz methanol maser, feature at v = 6.932 km/s
+# Toruń 32 m radio telescope; Szymczak, M., Olech, M., Wolak, P., Gérard, E.,
+# Bartkiewicz, A. 2018, A&A 617, A80, https://doi.org/10.1051/0004-6361/201833443
+# Please cite that paper when you use these data.
+#JD - 2,450,000	Stokes I (Jy)
 7195.1323	0.32679999
 7199.1035	0.18519999
 7211.9688	-1.32E-02

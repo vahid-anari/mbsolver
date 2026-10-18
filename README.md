@@ -123,7 +123,8 @@ derivation, the final dimensionless equations, the initial conditions and the
 CH₃OH data are in [`docs/three_level/`](docs/three_level/);
 [`examples/three_level/s255_flare.py`](examples/three_level/s255_flare.py)
 runs the S255IR-NIRS3 flare and plots it with the observed flux (needs
-matplotlib).
+matplotlib). The observations are from the Toruń 32 m telescope,
+[Szymczak et al. 2018, A&A 617, A80](https://doi.org/10.1051/0004-6361/201833443).
 
 ## From physical values: `scaling` (two-level)
 

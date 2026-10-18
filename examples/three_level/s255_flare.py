@@ -4,7 +4,10 @@ The three-level case of the paper: r2 = 2.33e19 and c32 = 1 for the observed
 3→2 line, a weakly coherent 3→1 pathway (c31 = 1e-10) with shorter
 relaxation times, and a sech² pump. Runs the model for three values of
 r1 and plots both intensities in Jy, with the observed 3→2 flux at
-v = 6.932 km/s (``s255_v6.932.txt``).
+v = 6.932 km/s (``s255_v6.932.txt``), observed with the Toruń 32 m
+telescope by Szymczak et al. 2018, A&A 617, A80
+(https://doi.org/10.1051/0004-6361/201833443); please cite it when you
+use these data.
 
 Run from this folder (needs matplotlib):  python s255_flare.py
 """
@@ -38,7 +41,7 @@ pump32 = Pulse(a=2.6e-13 / s["lambda0"], x0=795.5, w=8.1e6 / t0)
 T_START, DATA_OFFSET = 56800.0, 50000.0
 I_NORM = 0.21                                          # flux factor of the paper's figures
 
-data = np.loadtxt(HERE / "s255_v6.932.txt", skiprows=1)
+data = np.loadtxt(HERE / "s255_v6.932.txt")
 
 fig, (ax31, ax32) = plt.subplots(2, 1, figsize=(8, 8), sharex=True)
 for value in (0.79, 0.89, 0.94):
