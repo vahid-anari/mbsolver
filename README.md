@@ -207,7 +207,9 @@ Vahid Anari ·
 [GitHub](https://github.com/vahid-anari) ·
 [LinkedIn](https://www.linkedin.com/in/vahid-anari/)
 
-Toktam Rashidi (three-level model)
+Toktam Rashidi ·
+[GitHub](https://github.com/ToktamS) ·
+[LinkedIn](https://www.linkedin.com/in/toktam-r-71951996/)
 
 Related projects: [sciwidgets](https://github.com/vahid-anari/sciwidgets) ·
 [Maxwell Bloch Studio](https://github.com/vahid-anari/maxwell-bloch-studio) ·
