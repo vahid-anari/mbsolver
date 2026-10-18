@@ -16,3 +16,6 @@ MU_0: float = 4.0 * PI * 1e-7
 
 EPSILON_0: float = 1.0 / (MU_0 * C**2)
 """Vacuum permittivity in farads per meter."""
+
+DEBYE: float = 1e-21 / C
+"""One debye in coulomb-meters."""

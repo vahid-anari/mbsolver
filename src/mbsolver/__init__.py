@@ -2,7 +2,7 @@
 
 Profiles (pump pulses, boundary fields, relaxation-time schedules) are built
 with :class:`Pulse` and :class:`Steps`; the solvers live in model subpackages,
-e.g. ``mbsolver.two_level.solve_1d``. :func:`scaling` turns the physical
+e.g. ``mbsolver.two_level.solve_1d`` and ``mbsolver.three_level.solve_1d``. :func:`scaling` turns the physical
 sample values into the solvers' ``eta`` and ``theta0``.
 """
 
