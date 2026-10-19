@@ -73,6 +73,22 @@ plt.show()
 `res.time`, `res.z` (positions of the stored planes), `res.intensity` and
 `res.w` (shape `(n_planes, nt)`), `res.pump`, `res.field_in`, `res.t1`, `res.t2`.
 
+### Adiabatic (rate-equation) limit
+
+When `T2` is short compared with the times over which `A` and `w` change, the
+coherence follows its steady state, `R = R0 − T2 A w`, and two equations remain:
+
+```
+dw/dt = A R0 − T2 A² w − (w − w0) / T1 + Λ(t)
+dA/dz = −η R0 + η T2 A w
+```
+
+`solve_1d_adiabatic` takes the same arguments as `solve_1d` (with a finite
+`t2`) and returns the same result plus `res.R`, so the two can be compared
+directly. The limit differs from the full system during the first few `T2`
+and in bursts faster than `T2`; see the section on it in
+[`docs/two_level.pdf`](docs/two_level.pdf).
+
 ## Three-level (Λ) model in one dimension
 
 Levels 1 and 2 lie below level 3; the transitions 3→1 and 3→2 carry the fields

@@ -4,8 +4,10 @@ Each version is a Git tag (`vX.Y.Z`) and is on [PyPI](https://pypi.org/project/m
 Pushing a tag publishes a GitHub Release with that version's notes, and Zenodo
 then gives the release its own DOI.
 
-## Unreleased
+## 0.5.0 — 2026-10-19
 
+- `mbsolver.two_level.solve_1d_adiabatic`: the adiabatic (rate-equation) limit of the two-level model. The coherence follows its steady state, `R = R0 − T2 A w`, and only `w` and `A` are solved; same arguments as `solve_1d`, and the result also carries `R`. `w` is advanced exactly over each time step, so strong fields (a stiff equation) stay stable. Needs a finite `t2`.
+- `two_level.Result.R` (coherence; `None` from `solve_1d`).
 - Model documents in `docs/`: `two_level.pdf` (moved from Maxwell Bloch Studio's equations reference) and `three_level.pdf` (derivation of the Λ model, initial conditions, scales, S255IR-NIRS3 values), built with `tools/build_docs.sh`. They replace the Word PDFs in `docs/three_level/`.
 - S255 example: exact `r2 = cot²(θ0/2)` and three-level density `n0`; same results.
 

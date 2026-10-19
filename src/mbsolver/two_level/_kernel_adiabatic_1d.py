@@ -1,6 +1,6 @@
 """Two-level Maxwell-Bloch equations, adiabatic (rate-equation) limit, one dimension.
 
-Temporary test solver. With dR/dt = 0 the coherence follows the field and the population::
+With dR/dt = 0 the coherence follows the field and the population::
 
     R = R0 - T2 A w
 

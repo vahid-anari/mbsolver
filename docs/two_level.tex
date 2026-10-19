@@ -555,6 +555,58 @@ $\nu$, $\Gamma$, $\T$, $L$ and $n_0$ (Section~\ref{sec:code}).
 \end{notebox}
 
 % ══════════════════════════════════════════════════════════════════════════════
+\section{Adiabatic (Rate-Equation) Limit}
+\label{sec:adiabatic}
+
+When $T_2'$ is short compared with the times over which $A'$ and $w$ change,
+the coherence follows the field and the population without delay. Setting
+$\partial R/\partial\tau' = 0$ in Eq.~(\ref{eq:realR}) gives
+\begin{equation}
+  R = R_0 - T_2'\,A' w ,
+  \label{eq:Radiab}
+\end{equation}
+and substituting it into Eqs.~(\ref{eq:realw}) and (\ref{eq:realA}) leaves two
+equations, for $w$ and $A'$ only:
+
+\begin{resultbox}
+\begin{align}
+  \pderiv{w}{\tau'}
+    &= A'R_0 - T_2'A'^2 w - \frac{w - w_0}{T_1'} + \Lambda_n',
+  \label{eq:adiabw}\\[8pt]
+  \pderiv{A'}{z'}
+    &= -\eta R_0 + \eta\, T_2' A' w .
+  \label{eq:adiabA}
+\end{align}
+\end{resultbox}
+
+The term $T_2'A'^2 w$ is stimulated emission, which uses up the inversion, and
+$\eta T_2' w$ is the gain coefficient of the field: a weak field grows as
+$e^{\eta T_2' w z'}$ through an inverted medium. These are the rate equations of
+a maser amplifier.
+
+The limit breaks down where the coherence has no time to follow: during the first
+few $T_2'$, when the full system still has $R = R_0$ while
+Eq.~(\ref{eq:Radiab}) applies the full gain at once, and in bursts faster than
+$T_2'$ (superradiant ringing). Late-time, slowly varying solutions agree with the
+full system for any $T_2'$. The limit needs a finite $T_2'$.
+
+\begin{notebox}
+  \code{mbsolver.two\_level.solve\_1d\_adiabatic} solves
+  Eqs.~(\ref{eq:adiabw})--(\ref{eq:adiabA}) on the same grids as
+  \code{solve\_1d}, with the same explicit step in $z'$. Over one time step
+  $\Delta\tau'$ the field, $T_1'$, $T_2'$ and $\Lambda_n'$ are held fixed, so
+  Eq.~(\ref{eq:adiabw}) is linear, $\partial w/\partial\tau' = a - b\,w$ with
+  $a = A'R_0 + w_0/T_1' + \Lambda_n'$ and $b = T_2'A'^2 + 1/T_1'$, and is
+  advanced exactly:
+  \[
+    w(\tau' + \Delta\tau') = w + (a - b\,w)\,\frac{1 - e^{-b\Delta\tau'}}{b} .
+  \]
+  A strong field makes $b\,\Delta\tau'$ large (a stiff equation) where
+  Runge--Kutta would diverge; this step is stable for any $\Delta\tau'$.
+  $R$ follows from Eq.~(\ref{eq:Radiab}) and is returned as \code{res.R}.
+\end{notebox}
+
+% ══════════════════════════════════════════════════════════════════════════════
 \section{In the Code}
 \label{sec:code}
 
@@ -562,6 +614,8 @@ $\nu$, $\Gamma$, $\T$, $L$ and $n_0$ (Section~\ref{sec:code}).
 Eqs.~(\ref{eq:realw})--(\ref{eq:realA}) with fourth-order Runge--Kutta in
 $\tau'$ and an explicit step in $z'$. Its arguments and results map onto
 the symbols as follows (all dimensionless, times in units of $\T$).
+\code{solve\_1d\_adiabatic} (Section~\ref{sec:adiabatic}) takes the same
+arguments and returns the same result, plus $R$.
 
 \begin{center}
 \begin{tabular}{@{}lll@{}}
@@ -576,6 +630,7 @@ the symbols as follows (all dimensionless, times in units of $\T$).
   $A'(0,\tau')$               & \code{field\_in}                    & \code{res.field\_in} \\
   $w(z',\tau')$               & ---                                 & \code{res.w} \\
   $|A'(z',\tau')|^2$          & ---                                 & \code{res.intensity} \\
+  $R(z',\tau')$               & ---                                 & \code{res.R} (adiabatic only) \\
   \bottomrule
 \end{tabular}
 \end{center}

@@ -7,7 +7,8 @@ field ``A`` along a 1-D medium ``0 <= z <= 1``::
     dR/dt = -A w - (R - R0) / T2
     dA/dz = -η R
 
-with the field ``A(t, z=0)`` given at the entrance.
+with the field ``A(t, z=0)`` given at the entrance (:func:`solve_1d`), and their adiabatic
+limit ``R = R0 - T2 A w`` (:func:`solve_1d_adiabatic`).
 """
 
 from __future__ import annotations
@@ -118,15 +119,26 @@ def solve_1d_adiabatic(
         field_in: Profile = None,
         n_planes: int = 2,
 ) -> Result:
-    """Adiabatic (rate-equation) limit of :func:`solve_1d` — temporary, for testing.
+    """Solve the adiabatic (rate-equation) limit of the two-level equations.
 
     Sets ``dR/dt = 0``, so ``R = R0 - T2 A w`` and only two equations are solved::
 
         dw/dt = A R0 - T2 A² w - (w - w0) / T1 + Λ(t)
         dA/dz = -η R0 + η T2 A w
 
-    Same arguments and grids as :func:`solve_1d`, so the two can be compared directly;
-    ``t2`` must be finite. The result also carries ``R``.
+    The limit holds when ``T2`` is short compared with the times over which ``A`` and ``w``
+    change; it differs from :func:`solve_1d` during the first few ``T2`` and in bursts faster
+    than ``T2``. Same arguments and grids as :func:`solve_1d`, so the two can be compared
+    directly; ``t2`` must be finite. The result also carries ``R``. Derivation and numerical
+    scheme: ``docs/two_level.pdf``, section "Adiabatic (Rate-Equation) Limit".
+
+    Raises:
+        ValueError: As :func:`solve_1d`, and if ``t2`` is infinite anywhere.
+
+    Example:
+        >>> res = solve_1d_adiabatic(t_max=200, nt=4000, nz=200, eta=5.0, theta0=0.01,
+        ...                          t1=1.0, t2=0.5, pump=Pulse(a=0.1, x0=50, w=10))
+        >>> exit_intensity, exit_coherence = res.intensity[-1], res.R[-1]
     """
     g = _prepare(t_max=t_max, nt=nt, nz=nz, t1=t1, t2=t2, theta0=theta0, w0=w0, R0=R0,
                  pump=pump, field_in=field_in, n_planes=n_planes)

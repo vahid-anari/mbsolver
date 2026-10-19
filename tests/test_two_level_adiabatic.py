@@ -1,4 +1,4 @@
-"""Tests for the temporary mbsolver.two_level.solve_1d_adiabatic (rate-equation limit)."""
+"""Tests for mbsolver.two_level.solve_1d_adiabatic (rate-equation limit)."""
 
 import math
 
