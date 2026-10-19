@@ -21,8 +21,9 @@ import numpy as np
 from mbsolver.grids import grids_1d
 from mbsolver.profiles import Pulse, Steps, evaluate
 from mbsolver.two_level._kernel_1d import solve_kernel
+from mbsolver.two_level._kernel_adiabatic_1d import solve_kernel as _solve_kernel_adiabatic
 
-__all__ = ["Result", "solve_1d"]
+__all__ = ["Result", "solve_1d", "solve_1d_adiabatic"]
 
 
 @dataclass(frozen=True)
@@ -37,6 +38,8 @@ class Result:
         pump: Total pump ``Λ(t)``.
         field_in: Boundary field ``A(t, z=0)``.
         t1, t2: Relaxation times on the time grid.
+        R: Coherence on the stored planes, shape ``(n_planes, nt)``; only from
+            :func:`solve_1d_adiabatic` (``None`` from :func:`solve_1d`).
     """
 
     time: np.ndarray
@@ -47,6 +50,7 @@ class Result:
     field_in: np.ndarray
     t1: np.ndarray
     t2: np.ndarray
+    R: Optional[np.ndarray] = None
 
 
 Profile = Union[None, float, Pulse, Steps]
@@ -91,6 +95,52 @@ def solve_1d(
         ...                t1=1.0, t2=0.5, pump=Pulse(a=0.1, x0=50, w=10))
         >>> exit_intensity = res.intensity[-1]
     """
+    g = _prepare(t_max=t_max, nt=nt, nz=nz, t1=t1, t2=t2, theta0=theta0, w0=w0, R0=R0,
+                 pump=pump, field_in=field_in, n_planes=n_planes)
+    w, intensity = solve_kernel(g["t"], g["dt"], g["z"], g["dz"], g["n_planes"], g["w_z"], g["R_z"],
+                                g["field_t"], g["pump_t"], g["t1_t"], g["t2_t"], float(eta))
+    return Result(time=g["t"], z=g["planes"], intensity=intensity, w=w, pump=g["pump_t"],
+                  field_in=g["field_t"], t1=g["t1_t"], t2=g["t2_t"])
+
+
+def solve_1d_adiabatic(
+        *,
+        t_max: float,
+        nt: int,
+        nz: int,
+        eta: float,
+        t1: Union[float, Steps],
+        t2: Union[float, Steps],
+        theta0: Optional[float] = None,
+        w0: Optional[float] = None,
+        R0: Optional[float] = None,
+        pump: Union[Profile, Sequence[Profile]] = None,
+        field_in: Profile = None,
+        n_planes: int = 2,
+) -> Result:
+    """Adiabatic (rate-equation) limit of :func:`solve_1d` — temporary, for testing.
+
+    Sets ``dR/dt = 0``, so ``R = R0 - T2 A w`` and only two equations are solved::
+
+        dw/dt = A R0 - T2 A² w - (w - w0) / T1 + Λ(t)
+        dA/dz = -η R0 + η T2 A w
+
+    Same arguments and grids as :func:`solve_1d`, so the two can be compared directly;
+    ``t2`` must be finite. The result also carries ``R``.
+    """
+    g = _prepare(t_max=t_max, nt=nt, nz=nz, t1=t1, t2=t2, theta0=theta0, w0=w0, R0=R0,
+                 pump=pump, field_in=field_in, n_planes=n_planes)
+    if not np.all(np.isfinite(g["t2_t"])):
+        raise ValueError("t2 must be finite in the adiabatic limit")
+    w, intensity, R = _solve_kernel_adiabatic(
+        g["t"], g["dt"], g["z"], g["dz"], g["n_planes"], g["w_z"], g["R_z"],
+        g["field_t"], g["pump_t"], g["t1_t"], g["t2_t"], float(eta))
+    return Result(time=g["t"], z=g["planes"], intensity=intensity, w=w, pump=g["pump_t"],
+                  field_in=g["field_t"], t1=g["t1_t"], t2=g["t2_t"], R=R)
+
+
+def _prepare(*, t_max, nt, nz, t1, t2, theta0, w0, R0, pump, field_in, n_planes):
+    """Validate the arguments and build grids and profiles (shared by both solvers)."""
     nt, nz, n_planes = int(nt), int(nz), int(n_planes)
     if nt < 2 or nz < 2:
         raise ValueError("nt and nz must be at least 2")
@@ -123,9 +173,6 @@ def solve_1d(
 
     w_z = np.full_like(z, w_init)
     R_z = np.full_like(z, R_init)
-    w, intensity = solve_kernel(t, dt, z, dz, n_planes, w_z, R_z, field_t, pump_t,
-                                t1_t, t2_t, float(eta))
-
     planes = z[np.rint(np.linspace(0.0, 1.0, n_planes) * (nz - 1)).astype(np.int64)]
-    return Result(time=t, z=planes, intensity=intensity, w=w, pump=pump_t,
-                  field_in=field_t, t1=t1_t, t2=t2_t)
+    return dict(t=t, dt=dt, z=z, dz=dz, n_planes=n_planes, w_z=w_z, R_z=R_z, field_t=field_t,
+                pump_t=pump_t, t1_t=t1_t, t2_t=t2_t, planes=planes)
