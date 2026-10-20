@@ -237,5 +237,4 @@ Toktam Rashidi ·
 
 Related projects: [sciwidgets](https://github.com/vahid-anari/sciwidgets) ·
 [Maxwell Bloch Studio](https://github.com/vahid-anari/maxwell-bloch-studio) ·
-[linecat](https://github.com/vahid-anari/linecat) ·
-[Daftarche](https://github.com/vahid-anari/daftarche)
+[linecat](https://github.com/vahid-anari/linecat)
