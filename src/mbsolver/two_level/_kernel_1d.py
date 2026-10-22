@@ -2,6 +2,7 @@
 
 Moved unchanged from MB Solver 8.13 (``solver/maxwell_bloch.py``):
 RK4 in time for the population and coherence, explicit step in z for the field.
+From 0.6.0 the coherence R is also stored on the returned planes (numerics unchanged).
 
     dw/dt = A R - (w - w0) / T1 + Λ
     dR/dt = -A w - (R - R0) / T2
@@ -68,7 +69,7 @@ def solve_kernel(t, dt, z, dz, n_z_planes, w0, R0, A0, lambda_n, t1, t2, eta):
         eta: Coupling coefficient.
 
     Returns:
-        ``(w, I)``, each of shape ``(n_z_planes, len(t))``.
+        ``(w, I, R)``, each of shape ``(n_z_planes, len(t))``.
     """
     nt = len(t)
     nz = len(z)
@@ -90,6 +91,7 @@ def solve_kernel(t, dt, z, dz, n_z_planes, w0, R0, A0, lambda_n, t1, t2, eta):
 
     w_result = np.empty((n_z_planes, nt), dtype=np.float64)
     I_result = np.empty((n_z_planes, nt), dtype=np.float64)
+    R_result = np.empty((n_z_planes, nt), dtype=np.float64)
 
     w_old[0], R_old[0] = w0[0], R0[0]
     A_old[0] = A0[0]
@@ -108,6 +110,7 @@ def solve_kernel(t, dt, z, dz, n_z_planes, w0, R0, A0, lambda_n, t1, t2, eta):
 
     w_result[0, :] = w_old
     I_result[0, :] = A_old * A_old
+    R_result[0, :] = R_old
     i = 1
 
     for z_idx in range(1, nz):
@@ -129,10 +132,11 @@ def solve_kernel(t, dt, z, dz, n_z_planes, w0, R0, A0, lambda_n, t1, t2, eta):
         if i < n_z_planes and z_plane_indices[i] == z_idx:
             w_result[i, :] = w_new
             I_result[i, :] = A_new * A_new
+            R_result[i, :] = R_new
             i += 1
 
         w_old, w_new = w_new, w_old
         R_old, R_new = R_new, R_old
         A_old, A_new = A_new, A_old
 
-    return w_result, I_result
+    return w_result, I_result, R_result

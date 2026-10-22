@@ -54,6 +54,7 @@ def test_entrance_is_a_bloch_rotation():
     dt = res.time[1] - res.time[0]
     area = np.concatenate(([0.0], np.cumsum(res.field_in[:-1]) * dt))
     np.testing.assert_allclose(res.w[0], np.cos(theta0 - area), atol=1e-9)
+    np.testing.assert_allclose(res.R[0], np.sin(theta0 - area), atol=1e-9)
 
 
 def test_no_coupling_leaves_field_unchanged():

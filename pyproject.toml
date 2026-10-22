@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mbsolver"
-version = "0.5.0"
+version = "0.6.0"
 description = "Fast Maxwell-Bloch solvers for masers, superradiance and coherent pulse propagation"
 readme = "README.md"
 requires-python = ">=3.10"

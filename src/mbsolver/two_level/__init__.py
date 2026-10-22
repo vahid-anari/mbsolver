@@ -39,8 +39,8 @@ class Result:
         pump: Total pump ``Λ(t)``.
         field_in: Boundary field ``A(t, z=0)``.
         t1, t2: Relaxation times on the time grid.
-        R: Coherence on the stored planes, shape ``(n_planes, nt)``; only from
-            :func:`solve_1d_adiabatic` (``None`` from :func:`solve_1d`).
+        R: Coherence on the stored planes, shape ``(n_planes, nt)`` (from both solvers;
+            ``None`` only for a hand-built result).
     """
 
     time: np.ndarray
@@ -94,14 +94,14 @@ def solve_1d(
     Example:
         >>> res = solve_1d(t_max=200, nt=4000, nz=200, eta=5.0, theta0=0.01,
         ...                t1=1.0, t2=0.5, pump=Pulse(a=0.1, x0=50, w=10))
-        >>> exit_intensity = res.intensity[-1]
+        >>> exit_intensity, exit_coherence = res.intensity[-1], res.R[-1]
     """
     g = _prepare(t_max=t_max, nt=nt, nz=nz, t1=t1, t2=t2, theta0=theta0, w0=w0, R0=R0,
                  pump=pump, field_in=field_in, n_planes=n_planes)
-    w, intensity = solve_kernel(g["t"], g["dt"], g["z"], g["dz"], g["n_planes"], g["w_z"], g["R_z"],
-                                g["field_t"], g["pump_t"], g["t1_t"], g["t2_t"], float(eta))
+    w, intensity, R = solve_kernel(g["t"], g["dt"], g["z"], g["dz"], g["n_planes"], g["w_z"], g["R_z"],
+                                   g["field_t"], g["pump_t"], g["t1_t"], g["t2_t"], float(eta))
     return Result(time=g["t"], z=g["planes"], intensity=intensity, w=w, pump=g["pump_t"],
-                  field_in=g["field_t"], t1=g["t1_t"], t2=g["t2_t"])
+                  field_in=g["field_t"], t1=g["t1_t"], t2=g["t2_t"], R=R)
 
 
 def solve_1d_adiabatic(
@@ -129,7 +129,7 @@ def solve_1d_adiabatic(
     The limit holds when ``T2`` is short compared with the times over which ``A`` and ``w``
     change; it differs from :func:`solve_1d` during the first few ``T2`` and in bursts faster
     than ``T2``. Same arguments and grids as :func:`solve_1d`, so the two can be compared
-    directly; ``t2`` must be finite. The result also carries ``R``. Derivation and numerical
+    directly; ``t2`` must be finite. Derivation and numerical
     scheme: ``docs/two_level.pdf``, section "Adiabatic (Rate-Equation) Limit".
 
     Raises:

@@ -50,8 +50,9 @@ def test_stable_for_a_strong_field():
     assert np.all(np.isfinite(res.w)) and np.all(np.abs(res.w) <= 1.0 + 1e-12)
 
 
-def test_full_solver_returns_no_coherence():
-    assert solve_1d(**CASE, t2=0.5).R is None
+def test_full_solver_returns_coherence():
+    res = solve_1d(**CASE, t2=0.5)
+    assert res.R is not None and res.R.shape == res.w.shape
 
 
 def test_infinite_t2_is_refused():

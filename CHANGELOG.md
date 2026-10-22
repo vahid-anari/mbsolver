@@ -4,6 +4,10 @@ Each version is a Git tag (`vX.Y.Z`) and is on [PyPI](https://pypi.org/project/m
 Pushing a tag publishes a GitHub Release with that version's notes, and Zenodo
 then gives the release its own DOI.
 
+## 0.6.0 — 2026-10-22
+
+- `two_level.solve_1d` now also returns the coherence `R` on the stored planes (`res.R`, before only from `solve_1d_adiabatic`). Intensity and `w` are unchanged (bit-identical).
+
 ## 0.5.0 — 2026-10-19
 
 - `mbsolver.two_level.solve_1d_adiabatic`: the adiabatic (rate-equation) limit of the two-level model. The coherence follows its steady state, `R = R0 − T2 A w`, and only `w` and `A` are solved; same arguments as `solve_1d`, and the result also carries `R`. `w` is advanced exactly over each time step, so strong fields (a stiff equation) stay stable. Needs a finite `t2`.
