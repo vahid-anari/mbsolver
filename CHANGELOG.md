@@ -4,6 +4,12 @@ Each version is a Git tag (`vX.Y.Z`) and is on [PyPI](https://pypi.org/project/m
 Pushing a tag publishes a GitHub Release with that version's notes, and Zenodo
 then gives the release its own DOI.
 
+## 0.6.1 — 2026-10-23
+
+- Installs on Intel Macs: numba is kept below 0.63 there. Newer numba and llvmlite versions have no
+  Intel-Mac build, so pip compiled them from source, which failed. No change to the solvers or their
+  results.
+
 ## 0.6.0 — 2026-10-22
 
 - `two_level.solve_1d` now also returns the coherence `R` on the stored planes (`res.R`, before only from `solve_1d_adiabatic`). Intensity and `w` are unchanged (bit-identical).

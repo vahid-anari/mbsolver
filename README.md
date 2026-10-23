@@ -18,7 +18,8 @@ desktop app runs on the same code.
 pip install mbsolver
 ```
 
-Requires Python 3.10+ (numpy and numba are installed with it).
+Requires Python 3.10+ (numpy and numba are installed with it). On Intel Macs numba
+stays at 0.62, the last version built for them; with it, Python 3.10–3.13 are supported there.
 
 ## Two-level model in one dimension
 
