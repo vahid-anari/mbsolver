@@ -583,6 +583,9 @@ The term $T_2'A'^2 w$ is stimulated emission, which uses up the inversion, and
 $\eta T_2' w$ is the gain coefficient of the field: a weak field grows as
 $e^{\eta T_2' w z'}$ through an inverted medium. These are the rate equations of
 a maser amplifier.
+On the grid, the explicit step in $z'$ of both solvers gives a factor
+$1 + \eta T_2' w\,\Delta z'$ per step, which tends to the exponential as
+$\Delta z' \to 0$.
 
 The limit breaks down where the coherence has no time to follow: during the first
 few $T_2'$, when the full system still has $R = R_0$ while

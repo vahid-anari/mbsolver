@@ -190,7 +190,7 @@ pytest
 
 The tests include a reference run that must match the solver of the Maxwell
 Bloch app (version 8.13) exactly, and physics checks (Bloch rotation at the
-entrance, relaxation balance, uncoupled propagation). The three-level model
+entrance, relaxation balance, uncoupled propagation, small-signal gain). The three-level model
 matches the 2025 three-level solver exactly for the S255IR-NIRS3 case. `scaling`
 is checked against the values of Maxwell Bloch Studio.
 

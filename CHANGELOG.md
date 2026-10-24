@@ -4,6 +4,12 @@ Each version is a Git tag (`vX.Y.Z`) and is on [PyPI](https://pypi.org/project/m
 Pushing a tag publishes a GitHub Release with that version's notes, and Zenodo
 then gives the release its own DOI.
 
+## Unreleased
+
+- Tests: small-signal gain of the two-level model (`solve_1d` and `solve_1d_adiabatic`): a weak
+  field grows by the factor `1 + η T2 w0 Δz` per z step, which tends to `exp(η T2 w0 z)`. One sentence
+  on this in `two_level.pdf`. No change to the solvers.
+
 ## 0.6.1 — 2026-10-23
 
 - Installs on Intel Macs: numba is kept below 0.63 there. Newer numba and llvmlite versions have no
