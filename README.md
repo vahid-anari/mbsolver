@@ -8,9 +8,8 @@
 
 Fast Maxwell-Bloch solvers in Python (numpy + numba) for astrophysical masers,
 superradiance and coherent pulse propagation. Use them from scripts,
-notebooks or cluster jobs; the
-[Maxwell Bloch Studio](https://github.com/vahid-anari/maxwell-bloch-studio)
-desktop app runs on the same code.
+notebooks or cluster jobs; the Maxwell Bloch Studio desktop app runs on
+the same code.
 
 ## Installation
 
@@ -237,5 +236,4 @@ Toktam Rashidi ·
 [LinkedIn](https://www.linkedin.com/in/toktam-r-71951996/)
 
 Related projects: [sciwidgets](https://github.com/vahid-anari/sciwidgets) ·
-[Maxwell Bloch Studio](https://github.com/vahid-anari/maxwell-bloch-studio) ·
 [linecat](https://github.com/vahid-anari/linecat)
