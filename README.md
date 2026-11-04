@@ -229,11 +229,13 @@ MIT License. See [LICENSE](LICENSE).
 
 Vahid Anari ·
 [GitHub](https://github.com/vahid-anari) ·
-[LinkedIn](https://www.linkedin.com/in/vahid-anari/)
+[LinkedIn](https://www.linkedin.com/in/vahid-anari/) ·
+[ORCID](https://orcid.org/0000-0002-2464-3989)
 
 Toktam Rashidi ·
 [GitHub](https://github.com/ToktamS) ·
-[LinkedIn](https://www.linkedin.com/in/toktam-r-71951996/)
+[LinkedIn](https://www.linkedin.com/in/toktam-r-71951996/) ·
+[ORCID](https://orcid.org/0009-0007-2978-7985)
 
 Related projects: [sciwidgets](https://github.com/vahid-anari/sciwidgets) ·
 [linecat](https://github.com/vahid-anari/linecat)
