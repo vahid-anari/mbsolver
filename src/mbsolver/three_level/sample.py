@@ -1,9 +1,7 @@
-"""Initial populations and scales of the three-level model.
+"""Physical scales of the three-level model.
 
-:func:`populations` gives the level populations and population differences
-from the ratios ``r1 = n3/n1`` and ``r2 = n3/n2``; :func:`scaling` turns
-the physical values of the two transitions into the solver's ``d`` and
-``omega`` and the time, field, intensity and pump scales.
+:func:`scaling` turns the physical values of the transitions into the solver's
+couplings ``eta_ij`` and the field, intensity and pump scales.
 """
 
 from __future__ import annotations
@@ -13,73 +11,69 @@ from typing import Dict, Optional
 
 from mbsolver.constants import C, EPSILON_0, H_BAR, PI
 
-__all__ = ["populations", "scaling"]
+__all__ = ["scaling"]
 
 
-def populations(r1: float, r2: float) -> Dict[str, float]:
-    """Level populations from ``r1 = n3/n1`` and ``r2 = n3/n2`` (``n1 + n2 + n3 = 1``).
+def scaling(*, t0: float, l: float, n0: float,
+            nu21: Optional[float] = None, d21: Optional[float] = None, gamma21: Optional[float] = None,
+            nu31: Optional[float] = None, d31: Optional[float] = None, gamma31: Optional[float] = None,
+            nu32: Optional[float] = None, d32: Optional[float] = None, gamma32: Optional[float] = None,
+            ) -> Dict[str, float]:
+    """Compute the solver couplings and the scales from physical values (SI units).
 
-    Returns:
-        Mapping with ``n1``, ``n2``, ``n3``, the differences ``n31 = n3 - n1``
-        and ``n32 = n3 - n2``, and the largest coherences
-        ``r31 = 2√(n3 n1)``, ``r32 = 2√(n3 n2)``, ``r21 = 2√(n2 n1)``
-        (the solver's initial coherences are ``c_ij`` times these).
-    """
-    if r1 < 0 or r2 < 0:
-        raise ValueError("r1 and r2 must not be negative")
-    c = r1 + r2 + r1 * r2
-    if c == 0.0:
-        return {"n1": 0.5, "n2": 0.5, "n3": 0.0, "n31": -0.5, "n32": -0.5,
-                "r31": 0.0, "r32": 0.0, "r21": 1.0}
-    return {
-        "n1": r2 / c, "n2": r1 / c, "n3": r1 * r2 / c,
-        "n31": r2 * (r1 - 1) / c, "n32": r1 * (r2 - 1) / c,
-        "r31": 2.0 * r2 * math.sqrt(r1) / c,
-        "r32": 2.0 * r1 * math.sqrt(r2) / c,
-        "r21": 2.0 * math.sqrt(r1 * r2) / c,
-    }
-
-
-def scaling(nu31: float, nu32: float, d31: float, d32: float, l: float, n0: float,
-            gamma: Optional[float] = None) -> Dict[str, float]:
-    """Compute the solver parameters and scales from the physical values (SI units).
-
-    The time unit is ``T0 = 2 ε0 ħ / (n0 L k32 |d32|²)``. This equals
-    ``8π / (3 Γ n0 L λ32²)`` with ``Γ`` the Einstein A of the 3→2 line
-    computed from ``d32``; ``gamma`` replaces that ``Γ`` by a given rate.
+    Give, for each transition ``i→j`` of interest, its frequency ``nu_ij`` and
+    either its dipole moment ``d_ij`` or its Einstein coefficient ``gamma_ij``
+    (they are related by ``Γ = k³ |d|² / (3π ε0 ħ)``). The cooperation time
+    of a transition is ``T_R = 2 ε0 ħ / (n0 L k |d|²) = 8π / (3 Γ n0 L λ²)``
+    and its coupling ``η = T0 / T_R``.
 
     Args:
-        nu31, nu32: Frequencies of the 3→1 and 3→2 transitions in Hz.
-        d31, d32: Dipole moments in C·m (``mbsolver.constants.DEBYE`` converts from debye).
+        t0: Time unit T₀ in s (free; ``t0 = t_r_ij`` makes ``eta_ij = 1``).
         l: Length of the medium L in m.
-        n0: Density scale n₀ in m⁻³.
-        gamma: Decay rate Γ of the 3→2 line in s⁻¹; by default the Einstein A from ``d32``.
+        n0: Number density of the molecules in m⁻³.
+        nu21, nu31, nu32: Transition frequencies in Hz.
+        d21, d31, d32: Dipole moments in C·m (``mbsolver.constants.DEBYE`` converts from debye).
+        gamma21, gamma31, gamma32: Einstein coefficients in s⁻¹ (instead of the dipole moments).
 
     Returns:
-        Mapping:
+        Mapping with, for each given transition ``ij``: ``eta_ij``, ``t_r_ij``
+        (s), ``gamma_ij`` (s⁻¹), ``d_ij`` (C·m), ``k_ij`` (m⁻¹), ``lambda_ij``
+        (m), ``e0_ij`` = ħ / (T₀ d) (V/m) and ``i0_ij`` = ½ ε₀ c E₀² (W/m²);
+        and ``lambda0`` = n₀ / T₀, the pump scale in m⁻³ s⁻¹.
 
-        - ``d`` = |d31/d32| and ``omega`` = k31/k32 (the solver's ``d`` and ``omega``),
-          ``eta`` = ω d² (the coupling of the 3→1 field),
-        - ``k31``, ``k32``, ``lambda31``, ``lambda32``: wave numbers and wavelengths,
-        - ``gamma``: the decay rate used, ``t0``: time unit T₀ in s,
-        - ``e0`` = ħ / (T₀ d32): field scale in V/m,
-        - ``i0`` = ½ ε₀ c E₀²: intensity scale in W/m², ``i0_jy`` = 10²⁶ ``i0``,
-        - ``lambda0`` = n₀ / T₀: pump scale in m⁻³ s⁻¹.
+    Example:
+        >>> s = scaling(t0=1e4, l=1e12, n0=1e-6, nu21=1e9, gamma21=1e-9, nu32=2e9, gamma32=5e-9)
+        >>> eta21, eta32 = s["eta21"], s["eta32"]
     """
-    k31 = 2 * PI * nu31 / C
-    k32 = 2 * PI * nu32 / C
-    if gamma is None:
-        gamma = k32**3 * d32**2 / (3 * PI * EPSILON_0 * H_BAR)
-        t0 = 2.0 * EPSILON_0 * H_BAR / (n0 * l * k32 * d32**2)
-    else:
-        t0 = 2.0 * k32**2 / (3.0 * PI * gamma * n0 * l)
-    d = abs(d31 / d32)
-    omega = k31 / k32
-    e0 = H_BAR / (t0 * d32)
-    i0 = 0.5 * EPSILON_0 * C * e0**2
-    return {
-        "d": d, "omega": omega, "eta": omega * d**2,
-        "k31": k31, "k32": k32, "lambda31": C / nu31, "lambda32": C / nu32,
-        "gamma": gamma, "t0": t0, "e0": e0, "i0": i0, "i0_jy": i0 * 1e26,
-        "lambda0": n0 / t0,
-    }
+    values = {"21": (nu21, d21, gamma21), "31": (nu31, d31, gamma31), "32": (nu32, d32, gamma32)}
+    if not (t0 > 0 and l > 0 and n0 > 0):
+        raise ValueError("t0, l and n0 must be positive")
+    out: Dict[str, float] = {}
+    for p, (nu, d, gamma) in values.items():
+        if nu is None:
+            if d is not None or gamma is not None:
+                raise ValueError(f"d{p} or gamma{p} given without nu{p}")
+            continue
+        if (d is None) == (gamma is None):
+            raise ValueError(f"give exactly one of d{p} and gamma{p}")
+        if not nu > 0:
+            raise ValueError(f"nu{p} must be positive")
+        k = 2 * PI * nu / C
+        if d is not None:
+            d = abs(d)
+            gamma = k**3 * d**2 / (3 * PI * EPSILON_0 * H_BAR)
+        else:
+            gamma = float(gamma)
+            d = math.sqrt(3 * PI * EPSILON_0 * H_BAR * gamma / k**3)
+        if not (d > 0 and gamma > 0):
+            raise ValueError(f"d{p} and gamma{p} must be positive")
+        t_r = 2.0 * k**2 / (3.0 * PI * gamma * n0 * l)
+        e0 = H_BAR / (t0 * d)
+        out.update({
+            f"eta{p}": t0 / t_r, f"t_r{p}": t_r, f"gamma{p}": gamma, f"d{p}": d,
+            f"k{p}": k, f"lambda{p}": C / nu, f"e0_{p}": e0, f"i0_{p}": 0.5 * EPSILON_0 * C * e0**2,
+        })
+    if not out:
+        raise ValueError("give at least one transition (nu_ij with d_ij or gamma_ij)")
+    out["lambda0"] = n0 / t0
+    return out

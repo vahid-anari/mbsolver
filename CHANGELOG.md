@@ -6,6 +6,20 @@ then gives the release its own DOI.
 
 ## Unreleased
 
+- **Breaking:** `mbsolver.three_level` now solves the Λ, V and ladder configurations
+  (`solve_1d(config="lambda" | "v" | "ladder", ...)`). Each allowed transition has its own coupling
+  `eta_ij` (the time unit T0 is free); the initial populations are given directly as
+  `n_init=(n1, n2, n3)`; `t1_ij`, `pump_ij` and `field_ij_in` belong to the allowed transitions and
+  `t2_ij` to all three coherences. The result always holds `e21`, `e31`, `e32`, `n21`, `n31`, `n32`,
+  `r21`, `r31`, `r32` (the forbidden field is zero) and no intensities. The arguments `d`, `omega`,
+  `r1`, `r2`, the results `intensity31`, `intensity32` and the function `populations` are gone. The Λ
+  case gives the same numbers as before (old `d`, `omega` → `eta31 = omega·d²`, `eta32 = 1`).
+- `three_level.scaling(t0=, l=, n0=, nu_ij=, d_ij= or gamma_ij=)`: per-transition couplings
+  `eta_ij`, cooperation times `t_r_ij` and field and intensity scales `e0_ij`, `i0_ij`.
+- `three_level.pdf` rewritten for the general model: all three dipoles, the three configurations,
+  phenomenological relaxation, initial conditions from `n_init`, per-transition scales, the closed-loop case.
+- Removed the three-level example with observational data (`examples/three_level/`) and the
+  initial-conditions figure.
 - Tests: small-signal gain of the two-level model (`solve_1d` and `solve_1d_adiabatic`): a weak
   field grows by the factor `1 + η T2 w0 Δz` per z step, which tends to `exp(η T2 w0 z)`. One sentence
   on this in `two_level.pdf`. No change to the solvers.

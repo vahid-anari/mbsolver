@@ -18,7 +18,7 @@ url: "https://pypi.org/project/mbsolver/"
 abstract: >-
   Fast Maxwell-Bloch solvers in Python (numpy + numba) for astrophysical
   masers, superradiance and coherent pulse propagation: one-dimensional
-  two-level and Lambda-type three-level models with pump and boundary-field
+  two-level and three-level (Lambda, V and ladder) models with pump and boundary-field
   profiles, relaxation-time schedules, and the scaling from physical sample
   values to the solvers' dimensionless parameters.
 keywords:

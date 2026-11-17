@@ -89,61 +89,66 @@ directly. The limit differs from the full system during the first few `T2`
 and in bursts faster than `T2`; see the section on it in
 [`docs/two_level.pdf`](docs/two_level.pdf).
 
-## Three-level (Λ) model in one dimension
+## Three-level model in one dimension
 
-Levels 1 and 2 lie below level 3; the transitions 3→1 and 3→2 carry the fields
-`E31` and `E32`. With the population differences `n31 = n3 − n1`,
-`n32 = n3 − n2` and the coherences `R31`, `R32`, `R21` (all real):
+Levels are ordered by energy, `E1 < E2 < E3`. Two of the three transitions
+are dipole allowed and carry fields; the third is forbidden:
+
+| `config`   | allowed     | forbidden |
+|------------|-------------|-----------|
+| `"lambda"` | 3→1, 3→2    | 2↔1       |
+| `"v"`      | 2→1, 3→1    | 3↔2       |
+| `"ladder"` | 2→1, 3→2    | 3↔1       |
+
+With `n_ij = n_i − n_j`, `W_ij = ½ E_ij R_ij` and fields as Rabi frequencies,
+the dimensionless equations along `0 ≤ z ≤ 1` are
 
 ```
-dn31/dt = −(E31 R31 + ½ E32 R32) − (n31 − n31⁰) / T1_31 + Λ31(t)
-dn32/dt = −(½ E31 R31 + E32 R32) − (n32 − n32⁰) / T1_32 + Λ32(t)
-dR31/dt = E31 n31 − ½ E32 R21 − (R31 − R31⁰) / T2_31
-dR32/dt = E32 n32 − ½ E31 R21 − (R32 − R32⁰) / T2_32
-dR21/dt = ½ (E31 R32 + E32 R31) − (R21 − R21⁰) / T2_21
-dE31/dz = η R31,   dE32/dz = R32,   η = ω d²
+dn1/dt =  W21 + W31,   dn2/dt = W32 − W21,   dn3/dt = −W31 − W32
+dR21/dt = E21 n21 + ½ (E31 R32 + E32 R31) − (R21 − R21⁰) / T2_21
+dR31/dt = E31 n31 + ½ (E21 R32 − E32 R21) − (R31 − R31⁰) / T2_31
+dR32/dt = E32 n32 − ½ (E21 R31 + E31 R21) − (R32 − R32⁰) / T2_32
+dE_ij/dz = η_ij R_ij
 ```
 
-with `d = |d31/d32|` and `ω = k31/k32`. Time is in units of the 3→2 time
-scale `T0 = 2ε0ħ / (n0 L k32 |d32|²)`. The initial state comes from the
-population ratios `r1 = n3/n1`, `r2 = n3/n2` and the coherence fractions
-`c_ij`: `R_ij⁰ = c_ij · 2√(n_i n_j)`.
+The field of the forbidden transition is zero. The population differences of
+the two allowed transitions relax with their `T1` and are pumped. In Λ and V
+the two transitions compete for the shared level; in the ladder, emission on
+the upper step raises the inversion of the lower one (a cascade).
 
 ```python
-from mbsolver import Pulse
+import math
 from mbsolver.three_level import solve_1d
 
 res = solve_1d(
-    t_max=2500, nt=4000, nz=400, d=0.875, omega=35.95,
-    r1=0.94, r2=2.33e19, c31=1e-10, c32=1.0,       # c21 = 0 by default
-    t1_31=31.3, t1_32=313, t2_31=2.96, t2_32=29.6, # t2_21 = inf by default
-    pump32=Pulse(a=5.63e-3, x0=795.5, w=154.8),    # pump31, field31_in, field32_in too
+    config="ladder", t_max=200, nt=2001, nz=101,
+    n_init=(0.05, 0.05, 0.9),                 # (n1, n2, n3), summing to 1
+    eta21=10.0, eta32=10.0,                   # couplings of the allowed transitions
+    c21=1e-3, c32=1e-3,                       # seeds: R_ij⁰ = c_ij · 2√(n_i n_j)
+    t1_21=math.inf, t1_32=math.inf,
+    t2_21=math.inf, t2_32=math.inf,           # t2 of the forbidden pair: inf by default
 )
-res.intensity32[-1]                                # 3→2 intensity leaving the medium
+res.e32[-1], res.e21[-1]                      # upper step bursts first, then the lower one
 ```
 
-`t1_*` and `t2_*` take numbers or `Steps`, the pumps and entrance fields
-`Pulse`s, numbers or lists, as in the two-level model. The result holds
-`time`, `z`, the fields `e31`, `e32`, the intensities `intensity31 = (E31/d)²`
-and `intensity32 = E32²` (both in units of the 3→2 scale), `n31`, `n32`,
-`r31`, `r32`, `r21` (shape `(n_planes, nt)`), and the pumps, entrance fields
-and relaxation times on the time grid.
+`eta_ij`, `t1_ij`, `pump_ij` and `field_ij_in` are given only for the allowed
+transitions; `t2_ij` and `c_ij` exist for all three coherences. Relaxation
+times take numbers or `Steps`, pumps and entrance fields `Pulse`s, numbers or
+lists, as in the two-level model. The result holds `time`, `z`, the fields
+`e21`, `e31`, `e32`, the differences `n21`, `n31`, `n32` and the coherences
+`r21`, `r31`, `r32` (shape `(n_planes, nt)`), and the inputs on the time grid.
 
-`populations(r1, r2)` gives `n1`, `n2`, `n3`, `n31⁰`, `n32⁰` and the largest
-coherences. `scaling(nu31, nu32, d31, d32, l, n0)` (SI units;
-`mbsolver.constants.DEBYE` converts dipoles from debye) gives `d`, `omega`,
-`eta`, `t0`, the field and intensity scales `e0`, `i0` (and `i0_jy` = 10²⁶ `i0`)
-and the pump scale `lambda0 = n0/t0`. By default the decay rate of the 3→2
-line is the Einstein A computed from `d32`; pass `gamma=` to use a measured one.
+Time is in units of a free time unit `T0`; each transition has
+`η_ij = T0 / T_R` with the cooperation time `T_R = 2ε0ħ / (n0 L k_ij |d_ij|²)`.
+`mbsolver.three_level.scaling(t0=, l=, n0=, nu31=, d31=, ...)` computes, for
+each transition given by its frequency and its dipole moment (or Einstein
+coefficient `gamma_ij`), `eta_ij`, `t_r_ij` and the field and intensity scales
+`e0_ij`, `i0_ij`; `mbsolver.constants.DEBYE` converts dipoles from debye.
 
 The three-level equations were derived and checked with Toktam Rashidi. The
 derivation, from the Hamiltonian to the dimensionless equations, with the
-initial conditions, physical scales and the S255IR-NIRS3 values, is in
-[`docs/three_level.pdf`](docs/three_level.pdf);
-[`examples/three_level/s255_flare.py`](examples/three_level/s255_flare.py)
-runs the S255IR-NIRS3 flare and plots it with the observed flux (needs
-matplotlib). The observations are from the Toruń 32 m telescope,
-[Szymczak et al. 2018, A&A 617, A80](https://doi.org/10.1051/0004-6361/201833443).
+three configurations, initial conditions and physical scales, is in
+[`docs/three_level.pdf`](docs/three_level.pdf).
 
 ## From physical values: `scaling` (two-level)
 
@@ -189,8 +194,10 @@ pytest
 
 The tests include a reference run that must match the solver of the Maxwell
 Bloch app (version 8.13) exactly, and physics checks (Bloch rotation at the
-entrance, relaxation balance, uncoupled propagation, small-signal gain). The three-level model
-matches the 2025 three-level solver exactly for the S255IR-NIRS3 case. `scaling`
+entrance, relaxation balance, uncoupled propagation, small-signal gain). The three-level
+Λ case must match a stored run of the earlier Λ-only solver; all three configurations
+are checked for purity conservation, Bloch rotation and the reduction to the two-level
+model. `scaling`
 is checked against the values of Maxwell Bloch Studio.
 
 The model documents `docs/two_level.pdf` and `docs/three_level.pdf` are built

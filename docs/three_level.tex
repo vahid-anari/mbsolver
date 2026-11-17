@@ -1,7 +1,7 @@
 \documentclass[12pt,a4paper]{article}
 
 \input{metadata.tex}
-\newcommand{\DocName}{\texorpdfstring{Three-Level ($\Lambda$) Model}{Three-Level (Lambda) Model}}
+\newcommand{\DocName}{Three-Level Model}
 \usepackage{style}
 
 % ── Convenience macros ────────────────────────────────────────────────────────
@@ -9,21 +9,21 @@
 \newcommand{\mb}{Maxwell--Bloch}
 \newcommand{\E}{\mathcal{E}}
 \newcommand{\tE}{\tilde{E}}
+\newcommand{\tW}{\tilde{W}}
 \newcommand{\tret}{t_{\mathrm{ret}}}
+\newcommand{\TR}[1]{T_{\mathrm{R}}^{(#1)}}
 
 % ══════════════════════════════════════════════════════════════════════════════
 \begin{document}
 
 \DocTitlePage{This document derives the dimensionless \mb{} equations of a
-  $\Lambda$-type three-level system solved by
-  \code{mbsolver.three\_level.solve\_1d}: two dipole-allowed transitions
-  $3\rightarrow1$ and $3\rightarrow2$ share the upper level. It starts from
-  the three-level Hamiltonian and proceeds through the rotating-wave and
-  slowly-varying-envelope approximations to the final dimensionless system,
-  its initial conditions and the scales that connect it to physical values.
-  The model and its application to the 6.7~GHz methanol flare in
-  S255IR-NIRS3 are described in a paper by the authors that is currently
-  under review.}
+  three-level system solved by \code{mbsolver.three\_level.solve\_1d}. The
+  equations are derived with all three transitions dipole coupled; setting one
+  transition dipole to zero gives the $\Lambda$, V or ladder configuration.
+  The derivation starts from the three-level Hamiltonian and proceeds through
+  the rotating-wave and slowly-varying-envelope approximations to the final
+  dimensionless system, its initial conditions and the scales that connect it
+  to physical values.}
 
 \tableofcontents
 \newpage
@@ -33,154 +33,191 @@
 
 \begin{figure}[h]
   \centering
-  \begin{tikzpicture}[scale=1.1, every node/.style={font=\small}]
-    \draw[thick] (0,0) -- (1.6,0) node[right] {$|1\rangle$};
-    \draw[thick] (3.4,1.6) -- (5.0,1.6) node[right] {$|2\rangle$};
-    \draw[thick] (1.6,4.0) -- (3.4,4.0) node[right] {$|3\rangle$};
-    \draw[<->, thick, accent] (0.8,0.05) -- (2.2,3.95)
-      node[midway, left=4pt] {$\E_{31}$, $d_{31}$, $\omega_{31}$};
-    \draw[<->, thick, accent] (4.2,1.65) -- (2.8,3.95)
-      node[midway, right=4pt] {$\E_{32}$, $d_{32}$, $\omega_{32}$};
-    \draw[dashed, gray] (1.6,0.05) -- (3.4,1.55)
-      node[midway, below right=-1pt] {forbidden};
+  \begin{tikzpicture}[scale=0.9, every node/.style={font=\small}]
+    % Lambda
+    \begin{scope}[xshift=0cm]
+      \draw[thick] (0,0) -- (1.0,0) node[right] {$|1\rangle$};
+      \draw[thick] (2.2,1.2) -- (3.2,1.2) node[right] {$|2\rangle$};
+      \draw[thick] (1.1,3.0) -- (2.1,3.0) node[right] {$|3\rangle$};
+      \draw[<->, thick, accent] (0.5,0.05) -- (1.4,2.95);
+      \draw[<->, thick, accent] (2.7,1.25) -- (1.8,2.95);
+      \draw[dashed, gray] (1.0,0.05) -- (2.2,1.15);
+      \node at (1.6,-0.7) {$\Lambda$: $d_{21} = 0$};
+    \end{scope}
+    % V
+    \begin{scope}[xshift=5.2cm]
+      \draw[thick] (1.1,0) -- (2.1,0) node[right] {$|1\rangle$};
+      \draw[thick] (0,1.8) -- (1.0,1.8) node[right] {$|2\rangle$};
+      \draw[thick] (2.2,3.0) -- (3.2,3.0) node[right] {$|3\rangle$};
+      \draw[<->, thick, accent] (1.4,0.05) -- (0.5,1.75);
+      \draw[<->, thick, accent] (1.8,0.05) -- (2.7,2.95);
+      \draw[dashed, gray] (1.0,1.85) -- (2.2,2.95);
+      \node at (1.6,-0.7) {V: $d_{32} = 0$};
+    \end{scope}
+    % ladder
+    \begin{scope}[xshift=10.4cm]
+      \draw[thick] (0.6,0) -- (1.6,0) node[right] {$|1\rangle$};
+      \draw[thick] (0.6,1.5) -- (1.6,1.5) node[right] {$|2\rangle$};
+      \draw[thick] (0.6,3.0) -- (1.6,3.0) node[right] {$|3\rangle$};
+      \draw[<->, thick, accent] (1.1,0.05) -- (1.1,1.45);
+      \draw[<->, thick, accent] (1.1,1.55) -- (1.1,2.95);
+      \draw[dashed, gray] (0.7,0.05) to[bend left=35] (0.7,2.95);
+      \node at (1.1,-0.7) {ladder: $d_{31} = 0$};
+    \end{scope}
   \end{tikzpicture}
-  \caption{The $\Lambda$-type three-level system. The upper level $|3\rangle$
-  is shared by the dipole-allowed transitions $3\rightarrow1$ and
-  $3\rightarrow2$; the transition $1\leftrightarrow2$ is dipole forbidden.
-  Level spacings are schematic.}
+  \caption{The three configurations. Levels are ordered by energy,
+  $E_1 < E_2 < E_3$. Solid arrows are dipole-allowed transitions; the dashed
+  line is the dipole-forbidden one. Level spacings are schematic.}
   \label{fig:levels}
 \end{figure}
 
-The molecule has three states $|1\rangle$, $|2\rangle$, $|3\rangle$
-(Fig.~\ref{fig:levels}). Taking the energy of $|1\rangle$ as zero, the free
-Hamiltonian is
+The molecule has three states $|1\rangle$, $|2\rangle$, $|3\rangle$, ordered
+by energy, $E_1 < E_2 < E_3$, with free Hamiltonian
 \begin{equation}
-  \hat{H}_0 = \hbar\omega_2\,|2\rangle\langle 2| + \hbar\omega_3\,|3\rangle\langle 3|,
+  \hat{H}_0 = \sum_{i} E_i\,|i\rangle\langle i| .
 \end{equation}
-so that the transition frequencies are $\omega_{31} = \omega_3$ and
-$\omega_{32} = \omega_3 - \omega_2$. With the dipole matrix elements
-$d_{ij} = \langle i|\hat{d}|j\rangle$, $d_{ij} = d_{ji}^*$, and
-$d_{12} = 0$ for the forbidden transition, the dipole operator along the
-field polarization is
+For each pair $i > j$ we write the transition frequency and wave number as
 \begin{equation}
-  \hat{d} = d_{13}\,|1\rangle\langle 3| + d_{23}\,|2\rangle\langle 3| + \mathrm{h.c.},
+  \omega_{ij} = \frac{E_i - E_j}{\hbar}, \qquad k_{ij} = \frac{\omega_{ij}}{c},
 \end{equation}
-and the interaction with the real electric field $\E(z,t)$ is
-\begin{equation}
-  \hat{H}_{\mathrm{int}} = -\hat{d}\,\E .
-\end{equation}
-The total Hamiltonian is $\hat{H} = \hat{H}_0 + \hat{H}_{\mathrm{int}}$.
+so that $\omega_{31} = \omega_{32} + \omega_{21}$. The transition dipoles
+are $\bm{d}_{ij} = \langle i|\hat{\bm{d}}|j\rangle$ with
+$\bm{d}_{ji} = \bm{d}_{ij}^*$. The equations below are derived with all three
+dipoles nonzero; setting one of them to zero gives the configurations of
+Fig.~\ref{fig:levels}:
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+  \toprule
+  Configuration & Shared level & Allowed transitions & Forbidden \\
+  \midrule
+  $\Lambda$ & upper, $|3\rangle$  & $3\rightarrow1$, $3\rightarrow2$ & $d_{21} = 0$ \\
+  V         & lower, $|1\rangle$  & $2\rightarrow1$, $3\rightarrow1$ & $d_{32} = 0$ \\
+  ladder    & middle, $|2\rangle$ & $2\rightarrow1$, $3\rightarrow2$ & $d_{31} = 0$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+The case with all three dipoles nonzero, a closed loop, is discussed in
+Section~\ref{sec:loop}; the solver does not treat it.
 
 % ══════════════════════════════════════════════════════════════════════════════
-\section{Density-Matrix Equations of Motion}
+\section{Fields and Density Matrix}
 
-The medium is described by the density matrix $\rho_{ij}$, normalized so
-that the populations $n_i = \rho_{ii}$ are fractions of the total number
-density $n_0$ of the three-level molecules: the number density in level $i$
-is $n_0 n_i$, and initially $n_1^0 + n_2^0 + n_3^0 = 1$. The
-Liouville--von Neumann equation $i\hbar\dot{\hat{\rho}} = [\hat{H},\hat{\rho}]$
-gives, with $\rho_{ij} = \rho_{ji}^*$,
+\subsection{Fields}
+
+The electric field is the sum of three components, one resonant with each
+transition,
+\begin{equation}
+  \bm{\E}(z,t) = \sum_{i>j} \hat{\bm{e}}_{ij}\,\E_{ij}(z,t),
+  \qquad
+  \E_{ij}(z,t) = \tfrac{1}{2}E_{ij}(z,t)\,e^{-i\varphi_{ij}} + \mathrm{c.c.},
+  \qquad
+  \varphi_{ij} = \omega_{ij}t - k_{ij}z,
+  \label{eq:field}
+\end{equation}
+where $E_{ij}$ are slowly varying complex envelopes and
+$\hat{\bm{e}}_{ij}$ fixed polarization vectors. Each component is a plane wave
+propagating along $z$; transverse effects such as diffraction are neglected.
+The full Hamiltonian is $\hat{H} = \hat{H}_0 - \hat{\bm{d}}\cdot\bm{\E}$, and
+the $i\rightarrow j$ transition couples to its own field through the dipole
+component
+\begin{equation}
+  d_{ij} = \hat{\bm{e}}_{ij}\cdot\bm{d}_{ij}, \qquad d_{ji} = d_{ij}^* .
+\end{equation}
+Diagonal elements of $\hat{\bm{d}}$ give only non-resonant terms and are
+dropped in the rotating-wave approximation below.
+
+\subsection{Density matrix}
+
+The molecules at position $z$ are described by the single-molecule density
+matrix $\hat{\rho}(z,t) = \sum_{i,j}\rho_{ij}\,|i\rangle\langle j|$ with
+$\operatorname{Tr}\hat{\rho} = 1$. Its diagonal elements $n_i = \rho_{ii}$ are
+the fractional populations, and the population differences are
+\begin{equation}
+  n_{ij} = n_i - n_j \qquad (i > j).
+\end{equation}
+A positive $n_{ij}$ means inversion on the $i\rightarrow j$ transition. The
+coherences carry the carrier of their transition,
+\begin{equation}
+  \rho_{ij} = \tfrac{1}{2}R_{ij}(z,t)\,e^{-i\varphi_{ij}},
+  \qquad \rho_{ji} = \rho_{ij}^* \qquad (i > j),
+  \label{eq:coh}
+\end{equation}
+with slowly varying amplitudes $R_{ij}$.
+
+\subsection{Approximations}
+
+All envelopes vary slowly compared with their carriers (SVEA),
+\begin{equation}
+  \left|\pderiv{E_{ij}}{t}\right| \ll \omega_{ij}|E_{ij}|, \qquad
+  \left|\pderiv{E_{ij}}{z}\right| \ll k_{ij}|E_{ij}|,
+\end{equation}
+and likewise for $R_{ij}$ \cite{GrossHaroche1982,Benedict1996}. In the
+rotating-wave approximation (RWA), each density-matrix element keeps only the
+terms that oscillate at its own carrier. This also assumes that each field
+drives only its own transition: the transition frequencies must differ by much
+more than the Rabi frequencies and the dephasing rates. All fields propagate
+along $+z$ with phase velocity $c$, so that $k_{31} = k_{32} + k_{21}$ and the
+three carriers keep the same relative phase throughout the sample. Detunings
+are set to zero.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Equations of Motion}
+
+\subsection{Bloch equations}
+
+Substituting Eqs.~(\ref{eq:field})--(\ref{eq:coh}) into the Liouville--von
+Neumann equation $i\hbar\,\partial_t\hat{\rho} = [\hat{H},\hat{\rho}]$ and
+keeping the resonant terms gives the Bloch equations. With
+\begin{equation}
+  W_{ij} = -\frac{1}{2\hbar}\operatorname{Im}\!\left(d_{ij}^* E_{ij}^* R_{ij}\right)
+  \qquad (i > j),
+  \label{eq:W}
+\end{equation}
+the populations obey
+\begin{equation}
+  \pderiv{n_1}{t} = W_{21} + W_{31}, \qquad
+  \pderiv{n_2}{t} = W_{32} - W_{21}, \qquad
+  \pderiv{n_3}{t} = -W_{31} - W_{32},
+  \label{eq:pop}
+\end{equation}
+which conserve $n_1 + n_2 + n_3$, and the coherences obey
 \begin{align}
-  \dot{\rho}_{11} &= -\frac{i}{\hbar}\,\E\,(\rho_{13}d_{31} - \rho_{31}d_{13}), \\
-  \dot{\rho}_{22} &= -\frac{i}{\hbar}\,\E\,(\rho_{23}d_{32} - \rho_{32}d_{23}), \\
-  \dot{\rho}_{33} &= \frac{i}{\hbar}\,\E\,(\rho_{13}d_{31} - \rho_{31}d_{13})
-                   + \frac{i}{\hbar}\,\E\,(\rho_{23}d_{32} - \rho_{32}d_{23}), \\
-  \dot{\rho}_{21} &= -i\omega_2\,\rho_{21} - \frac{i}{\hbar}\,\E\,(\rho_{23}d_{31} - \rho_{31}d_{23}), \\
-  \dot{\rho}_{31} &= -i\omega_3\,\rho_{31} - \frac{i}{\hbar}\,\E\,d_{31}(\rho_{33} - \rho_{11})
-                   + \frac{i}{\hbar}\,\E\,d_{32}\,\rho_{21}, \\
-  \dot{\rho}_{32} &= -i(\omega_3 - \omega_2)\,\rho_{32} - \frac{i}{\hbar}\,\E\,d_{32}(\rho_{33} - \rho_{22})
-                   + \frac{i}{\hbar}\,\E\,d_{31}\,\rho_{12}.
+  \pderiv{R_{21}}{t} &= -\frac{i}{\hbar}d_{21}E_{21}\,n_{21}
+     + \frac{i}{2\hbar}\left(d_{32}^*E_{32}^*R_{31} - d_{31}E_{31}R_{32}^*\right),\\
+  \pderiv{R_{31}}{t} &= -\frac{i}{\hbar}d_{31}E_{31}\,n_{31}
+     - \frac{i}{2\hbar}\left(d_{21}E_{21}R_{32} - d_{32}E_{32}R_{21}\right),\\
+  \pderiv{R_{32}}{t} &= -\frac{i}{\hbar}d_{32}E_{32}\,n_{32}
+     - \frac{i}{2\hbar}\left(d_{21}^*E_{21}^*R_{31} - d_{31}E_{31}R_{21}^*\right).
 \end{align}
-The coherence $\rho_{21}$ of the forbidden transition is not driven by the
-field directly, but it is generated through the two allowed transitions.
-
-% ══════════════════════════════════════════════════════════════════════════════
-\section{Maxwell Wave Equation}
-
-For a field propagating along $z$ and polarized perpendicular to it, with
-the polarization parallel to the field and no free charges, currents or
-magnetization, Maxwell's equations give the one-dimensional wave equation
-\begin{equation}
-  \pderiv{^2\E}{z^2} - \frac{1}{c^2}\pderiv{^2\E}{t^2}
-  = \frac{1}{\epsilon_0 c^2}\pderiv{^2\mathcal{P}}{t^2},
-  \label{eq:wave}
-\end{equation}
-with the macroscopic polarization
-\begin{equation}
-  \mathcal{P} = n_0\operatorname{Tr}(\hat{d}\hat{\rho})
-  = n_0\bigl(\rho_{31}d_{13} + \rho_{32}d_{23} + \mathrm{c.c.}\bigr).
-\end{equation}
-Only the coherences of the allowed transitions contribute.
-
-% ══════════════════════════════════════════════════════════════════════════════
-\section{Slowly Varying Envelope and Rotating-Wave Approximations}
-
-\subsection{Envelope decomposition}
-
-The field is the sum of two carriers, one resonant with each allowed
-transition, with slowly varying complex envelopes $E_{31}$ and $E_{32}$:
-\begin{equation}
-  \E(z,t) = \tfrac{1}{2}\bigl(E_{31}\,e^{-i\varphi_{31}} + E_{32}\,e^{-i\varphi_{32}}\bigr) + \mathrm{c.c.},
-  \qquad
-  \varphi_{3j} = \omega_{3j}t - k_{3j}z,
-  \qquad k_{3j} = \frac{\omega_{3j}}{c}.
-\end{equation}
-The coherences are written in the same way,
-\begin{equation}
-  \rho_{31} = \tfrac{1}{2}R_{31}\,e^{-i\varphi_{31}},
-  \qquad
-  \rho_{32} = \tfrac{1}{2}R_{32}\,e^{-i\varphi_{32}},
-  \qquad
-  \rho_{21} = \tfrac{1}{2}R_{21}\,e^{-i(\varphi_{31} - \varphi_{32})},
-\end{equation}
-and all envelopes vary slowly compared with their carriers (SVEA):
-\begin{equation}
-  \left|\pderiv{E_{3j}}{t}\right| \ll \omega_{3j}|E_{3j}|, \qquad
-  \left|\pderiv{E_{3j}}{z}\right| \ll k_{3j}|E_{3j}|,
-\end{equation}
-and likewise for $R_{3j}$ \cite{GrossHaroche1982,Benedict1996}. In the rotating-wave approximation (RWA) the
-terms oscillating at sums of carrier frequencies, and the terms in which a
-field drives the transition it is not resonant with, are dropped. The
-detunings
-\begin{equation}
-  \delta\omega_{31} = \omega_{31} - \omega_3, \qquad
-  \delta\omega_{32} = \omega_{32} - (\omega_3 - \omega_2), \qquad
-  \delta\omega_{21} = \omega_{31} - \omega_{32} - \omega_2
-\end{equation}
-appear as $i\,\delta\omega_{ij}R_{ij}$ terms; we take exact resonance,
-$\delta\omega_{ij} = 0$.
-
-\subsection{Bloch equations for the envelopes}
-
-Substituting the envelopes into the density-matrix equations and keeping
-the resonant terms gives
-\begin{align}
-  \dot{n}_1 &= \tfrac{1}{2}\operatorname{Re}\!\left[\Bigl(-\tfrac{i d_{31}}{\hbar}E_{31}\Bigr)^{\!*} R_{31}\right], \\
-  \dot{n}_2 &= \tfrac{1}{2}\operatorname{Re}\!\left[\Bigl(-\tfrac{i d_{32}}{\hbar}E_{32}\Bigr)^{\!*} R_{32}\right], \\
-  \dot{n}_3 &= -\tfrac{1}{2}\operatorname{Re}\!\left[\Bigl(-\tfrac{i d_{31}}{\hbar}E_{31}\Bigr)^{\!*} R_{31}
-              + \Bigl(-\tfrac{i d_{32}}{\hbar}E_{32}\Bigr)^{\!*} R_{32}\right], \\
-  \dot{R}_{21} &= \tfrac{1}{2}\left[\Bigl(-\tfrac{i d_{31}}{\hbar}E_{31}\Bigr) R_{32}^*
-              + \Bigl(-\tfrac{i d_{32}}{\hbar}E_{32}\Bigr)^{\!*} R_{31}\right], \\
-  \dot{R}_{31} &= \Bigl(-\tfrac{i d_{31}}{\hbar}E_{31}\Bigr)(n_3 - n_1)
-              - \tfrac{1}{2}\Bigl(-\tfrac{i d_{32}}{\hbar}E_{32}\Bigr) R_{21}, \\
-  \dot{R}_{32} &= \Bigl(-\tfrac{i d_{32}}{\hbar}E_{32}\Bigr)(n_3 - n_2)
-              - \tfrac{1}{2}\Bigl(-\tfrac{i d_{31}}{\hbar}E_{31}\Bigr) R_{21}^*.
-\end{align}
-The combinations $-i d_{3j}E_{3j}/\hbar$ (Rabi frequencies) appear
-throughout; they define the dimensionless fields in
-Section~\ref{sec:dimless}. Populations are conserved,
-$\dot n_1 + \dot n_2 + \dot n_3 = 0$.
+The second terms couple the transitions: each coherence is driven by the
+product of the field on one transition and the coherence on another.
 
 \subsection{Field equations}
 
-Substituting the field and the polarization into the wave
-equation~(\ref{eq:wave}), the terms at each carrier balance separately.
-Dropping second derivatives of the envelopes (SVEA),
+In a medium of $n_0$ molecules per unit volume, the macroscopic polarization
+$\bm{\mathcal{P}} = n_0\operatorname{Tr}(\hat{\rho}\,\hat{\bm{d}})$ has, along
+$\hat{\bm{e}}_{ij}$ and at the carrier of the $i\rightarrow j$ transition, the
+component
 \begin{equation}
-  \pderiv{E_{3j}}{z} + \frac{1}{c}\pderiv{E_{3j}}{t}
-  = i\,\frac{n_0 k_{3j} d_{j3}}{2\epsilon_0}\,R_{3j},
-  \qquad j = 1, 2.
+  \mathcal{P}_{ij} = \frac{n_0}{2}\,d_{ij}^*R_{ij}\,e^{-i\varphi_{ij}} + \mathrm{c.c.}
 \end{equation}
+Substituting the field and this polarization into the one-dimensional wave
+equation
+\begin{equation}
+  \pderiv{^2\E_{ij}}{z^2} - \frac{1}{c^2}\pderiv{^2\E_{ij}}{t^2}
+  = \frac{1}{\epsilon_0 c^2}\pderiv{^2\mathcal{P}_{ij}}{t^2}
+\end{equation}
+and dropping second derivatives of the envelopes (SVEA) gives
+\begin{equation}
+  \pderiv{E_{ij}}{z} + \frac{1}{c}\pderiv{E_{ij}}{t}
+  = i\,\frac{n_0 k_{ij} d_{ij}^*}{2\epsilon_0}\,R_{ij}.
+  \label{eq:max}
+\end{equation}
+Together with Eq.~(\ref{eq:W}) this gives
+$\partial_z|E_{ij}|^2 = (2\hbar n_0 k_{ij}/\epsilon_0)\,W_{ij}$ in the
+co-moving frame: $W_{ij}$ is the net rate at which the field on the
+$i\rightarrow j$ transition moves population from $i$ to $j$, and it is
+positive when that field is amplified.
 
 % ══════════════════════════════════════════════════════════════════════════════
 \section{Retarded Time and Dimensionless Form}
@@ -188,43 +225,42 @@ Dropping second derivatives of the envelopes (SVEA),
 
 \subsection{Retarded time}
 
-In the frame moving with the fields, $z' = z$ and
-$\tret = t - z/c$, the operator $\partial_z + c^{-1}\partial_t$ becomes
-$\partial_{z'}$ and the field equations are pure propagation equations,
-\begin{equation}
-  \pderiv{E_{3j}}{z'} = i\,\frac{n_0 k_{3j} d_{j3}}{2\epsilon_0}\,R_{3j},
-\end{equation}
-while the Bloch equations keep their form with $t \to \tret$.
+In the retarded time $\tret = t - z/c$, which serves all three fields, the
+operator $\partial_z + c^{-1}\partial_t$ becomes $\partial_z$ at fixed
+$\tret$, and the field equations become pure propagation equations, while
+the Bloch equations keep their form with $t \rightarrow \tret$.
 
 \subsection{Scaled variables}
 
-Lengths are scaled by the sample length $L$ and times by $\T$,
+Lengths are scaled by the sample length $L$ and times by a time unit $\T$,
 \begin{equation}
-  \xi = \frac{z'}{L}, \qquad \tau = \frac{\tret}{\T},
-  \qquad
-  \T = \frac{2\epsilon_0\hbar}{n_0 L k_{32} |d_{32}|^2},
-  \label{eq:T0}
+  \xi = \frac{z}{L}, \qquad \tau = \frac{\tret}{\T},
 \end{equation}
 and the fields by their Rabi frequencies,
 \begin{equation}
-  \boxed{\tE_{3j} = -i\,\frac{\T d_{3j}}{\hbar}\,E_{3j}.}
+  \boxed{\tE_{ij} = -i\,\frac{\T d_{ij}}{\hbar}\,E_{ij}.}
   \label{eq:Etilde}
+\end{equation}
+All dipole phases are absorbed into $\tE_{ij}$. The scaled transfer rates are
+\begin{equation}
+  \tW_{ij} = \T W_{ij} = \tfrac{1}{2}\operatorname{Re}\!\left(\tE_{ij}^* R_{ij}\right).
 \end{equation}
 The field equations become
 \begin{equation}
-  \pderiv{\tE_{31}}{\xi} = \frac{n_0 L |d_{31}|^2 k_{31} \T}{2\epsilon_0\hbar}\,R_{31} = \eta\,R_{31},
+  \pderiv{\tE_{ij}}{\xi} = \eta_{ij}\,R_{ij},
   \qquad
-  \pderiv{\tE_{32}}{\xi} = \frac{n_0 L |d_{32}|^2 k_{32} \T}{2\epsilon_0\hbar}\,R_{32} = R_{32},
-\end{equation}
-where $\T$ was chosen to make the coupling of the $3\rightarrow2$ field one,
-and the coupling of the $3\rightarrow1$ field is
-\begin{equation}
-  \boxed{\eta = \left|\frac{d_{31}}{d_{32}}\right|^2 \frac{k_{31}}{k_{32}} = d^2\,\omega,
-  \qquad d = \left|\frac{d_{31}}{d_{32}}\right|, \qquad \omega = \frac{k_{31}}{k_{32}}.}
+  \boxed{\eta_{ij} = \frac{\T}{\TR{ij}}, \qquad
+  \TR{ij} = \frac{2\epsilon_0\hbar}{n_0 L k_{ij} |d_{ij}|^2},}
   \label{eq:eta}
 \end{equation}
-$\eta$ is fixed by the spectroscopy of the two transitions; it is not a
-free parameter.
+where $\TR{ij}$ is the cooperation time of the $i\rightarrow j$ transition.
+The time unit $\T$ is free: only the couplings $\eta_{ij}$ enter the
+equations, and their ratios,
+\begin{equation}
+  \frac{\eta_{ij}}{\eta_{kl}} = \frac{|d_{ij}|^2 k_{ij}}{|d_{kl}|^2 k_{kl}},
+\end{equation}
+are fixed by the two transitions. A common choice is $\T = \TR{ij}$ for one
+transition, which makes its coupling one.
 
 \begin{notebox}
   \textbf{Sign of the field equation.} Here $\partial\tE/\partial\xi = +\eta R$,
@@ -235,91 +271,156 @@ free parameter.
   $A' = A/A_0$ with $A_0 = -i\hbar/(d\,\T)$, i.e.\ $A' = +i\,d\,\T A/\hbar$,
   while Eq.~(\ref{eq:Etilde}) has $-i$. For the same physical field
   $A' = -\tE$, which flips the sign of every field term: the two-level
-  equations $\dot w = A'R$, $\dot R = -A'w$, $\partial_{z'}A' = -\eta R$
-  correspond here to $\dot n_{32} = -\tE_{32}R_{32}$,
-  $\dot R_{32} = \tE_{32}n_{32}$, $\partial_\xi\tE_{32} = R_{32}$.
-  Intensities $|\tE|^2$ are the same in both conventions.
+  equations $\partial_{\tau'} w = A'R$, $\partial_{\tau'} R = -A'w$,
+  $\partial_{z'}A' = -\eta R$ correspond here to
+  $\partial_\tau n_{ij} = -\tE_{ij}R_{ij}$,
+  $\partial_\tau R_{ij} = \tE_{ij}n_{ij}$, $\partial_\xi\tE_{ij} = \eta_{ij}R_{ij}$
+  for a single transition. Intensities $|\tE|^2$ are the same in both
+  conventions.
 \end{notebox}
 
-\subsection{Relaxation and pumping}
+\subsection{Dimensionless equations}
 
-Non-coherent processes are added phenomenologically. The population
-differences
-\begin{equation}
-  n_{31} = n_3 - n_1, \qquad n_{32} = n_3 - n_2
-\end{equation}
-relax towards their reference values $n_{3j}^0$ with times $T_{3j}^{(1)}$,
-and the coherences $R_{ij}$ dephase towards $R_{ij}^0$ with times
-$T_{ij}^{(2)}$, $ij = 31, 32, 21$. Positive $n_{3j}$ means inversion on the
-$3\rightarrow j$ transition. Pumps $\Lambda_{31}$ and $\Lambda_{32}$ act on
-the two population differences. In scaled form,
-\begin{equation}
-  \tau_{ij}^{(k)} = \frac{T_{ij}^{(k)}}{\T}, \qquad
-  \tilde{\Lambda}_{3j} = \T\,\Lambda_{3j}.
-\end{equation}
-
-\subsection{Final dimensionless equations}
-
-Combining the Bloch equations for $n_3 - n_1$ and $n_3 - n_2$ and using
-Eq.~(\ref{eq:Etilde}):
+With Eq.~(\ref{eq:Etilde}), the Bloch and field equations become
 
 \begin{resultbox}
 \begin{align}
-  \pderiv{n_{31}}{\tau} &= -\operatorname{Re}\!\left(\tE_{31}^* R_{31} + \tfrac12\tE_{32}^* R_{32}\right)
-     - \frac{n_{31} - n_{31}^0}{\tau_{31}^{(1)}} + \tilde{\Lambda}_{31},
-  \label{eq:n31}\\[4pt]
-  \pderiv{n_{32}}{\tau} &= -\operatorname{Re}\!\left(\tfrac12\tE_{31}^* R_{31} + \tE_{32}^* R_{32}\right)
-     - \frac{n_{32} - n_{32}^0}{\tau_{32}^{(1)}} + \tilde{\Lambda}_{32},
-  \label{eq:n32}\\[4pt]
-  \pderiv{R_{31}}{\tau} &= \tE_{31}\,n_{31} - \tfrac12\tE_{32}\,R_{21}
-     - \frac{R_{31} - R_{31}^0}{\tau_{31}^{(2)}},
-  \label{eq:R31}\\[4pt]
-  \pderiv{R_{32}}{\tau} &= \tE_{32}\,n_{32} - \tfrac12\tE_{31}\,R_{21}^*
-     - \frac{R_{32} - R_{32}^0}{\tau_{32}^{(2)}},
-  \label{eq:R32}\\[4pt]
-  \pderiv{R_{21}}{\tau} &= \tfrac12\left(\tE_{31}R_{32}^* + \tE_{32}^* R_{31}\right)
-     - \frac{R_{21} - R_{21}^0}{\tau_{21}^{(2)}},
-  \label{eq:R21}\\[4pt]
-  \pderiv{\tE_{31}}{\xi} &= \eta\,R_{31}, \qquad
-  \pderiv{\tE_{32}}{\xi} = R_{32}.
-  \label{eq:fields}
-\end{align}
-\end{resultbox}
-
-In the paper the fields are written $\tE_1 \equiv \tE_{31}$ and
-$\tE_2 \equiv \tE_{32}$, and the pumps are absorbed into the reference
-values $n_{3j}^0$ except for the flare pump of Section~\ref{sec:s255}.
-
-\subsection{Real-variable reduction}
-\label{subsec:real}
-
-If the initial coherences $R_{ij}^0$ and the entrance fields $\tE_{3j}(0,\tau)$
-are real, the right-hand sides of
-Eqs.~(\ref{eq:n31})--(\ref{eq:fields}) are real whenever the variables are,
-so all variables stay real. Then $\operatorname{Re}(\tE^* R) = \tE R$,
-$R_{21}^* = R_{21}$, and the system becomes
-
-\begin{resultbox}
-\begin{align}
-  \pderiv{n_{31}}{\tau} &= -\left(\tE_{31} R_{31} + \tfrac12\tE_{32} R_{32}\right)
-     - \frac{n_{31} - n_{31}^0}{\tau_{31}^{(1)}} + \tilde{\Lambda}_{31},
-  \label{eq:rn31}\\[4pt]
-  \pderiv{n_{32}}{\tau} &= -\left(\tfrac12\tE_{31} R_{31} + \tE_{32} R_{32}\right)
-     - \frac{n_{32} - n_{32}^0}{\tau_{32}^{(1)}} + \tilde{\Lambda}_{32},\\[4pt]
-  \pderiv{R_{31}}{\tau} &= \tE_{31}\,n_{31} - \tfrac12\tE_{32}\,R_{21}
-     - \frac{R_{31} - R_{31}^0}{\tau_{31}^{(2)}},\\[4pt]
-  \pderiv{R_{32}}{\tau} &= \tE_{32}\,n_{32} - \tfrac12\tE_{31}\,R_{21}
-     - \frac{R_{32} - R_{32}^0}{\tau_{32}^{(2)}},\\[4pt]
-  \pderiv{R_{21}}{\tau} &= \tfrac12\left(\tE_{31}R_{32} + \tE_{32} R_{31}\right)
-     - \frac{R_{21} - R_{21}^0}{\tau_{21}^{(2)}},\\[4pt]
-  \pderiv{\tE_{31}}{\xi} &= \eta\,R_{31}, \qquad
-  \pderiv{\tE_{32}}{\xi} = R_{32}.
-  \label{eq:rfields}
+  \pderiv{n_1}{\tau} &= \tW_{21} + \tW_{31}, \qquad
+  \pderiv{n_2}{\tau} = \tW_{32} - \tW_{21}, \qquad
+  \pderiv{n_3}{\tau} = -\tW_{31} - \tW_{32},
+  \label{eq:dimpop}\\[6pt]
+  \pderiv{R_{21}}{\tau} &= \tE_{21}\,n_{21}
+     + \tfrac12\left(\tE_{31}R_{32}^* + \tE_{32}^*R_{31}\right),
+  \label{eq:dimR21}\\[4pt]
+  \pderiv{R_{31}}{\tau} &= \tE_{31}\,n_{31}
+     + \tfrac12\left(\tE_{21}R_{32} - \tE_{32}R_{21}\right),
+  \label{eq:dimR31}\\[4pt]
+  \pderiv{R_{32}}{\tau} &= \tE_{32}\,n_{32}
+     - \tfrac12\left(\tE_{21}^*R_{31} + \tE_{31}R_{21}^*\right),
+  \label{eq:dimR32}\\[6pt]
+  \pderiv{\tE_{ij}}{\xi} &= \eta_{ij}\,R_{ij}.
+  \label{eq:dimE}
 \end{align}
 \end{resultbox}
 
 \begin{notebox}
-  Equations~(\ref{eq:rn31})--(\ref{eq:rfields}) are the system solved by
+  No dipole appears in a denominator. A zero dipole $d_{ij}$ gives
+  $\eta_{ij} = 0$ for any $\T$ and, with no incident field on that transition,
+  $\tE_{ij} = 0$ everywhere. Setting one dipole to zero in
+  Eqs.~(\ref{eq:dimpop})--(\ref{eq:dimE}) is therefore exact.
+\end{notebox}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{The Three Configurations}
+\label{sec:configs}
+
+With the field of the forbidden transition set to zero, the populations enter
+only through the differences $n_a$ and $n_b$ of the two allowed transitions.
+From Eq.~(\ref{eq:dimpop}):
+\begin{center}
+\begin{tabular}{@{}lllll@{}}
+  \toprule
+  Configuration & Zero field & $n_a$, $n_b$ & $\partial_\tau n_a$ (coherent) & $\partial_\tau n_b$ (coherent) \\
+  \midrule
+  $\Lambda$ & $\tE_{21}$ & $n_{31}$, $n_{32}$ & $-(2\tW_{31} + \tW_{32})$ & $-(\tW_{31} + 2\tW_{32})$ \\
+  V         & $\tE_{32}$ & $n_{21}$, $n_{31}$ & $-(2\tW_{21} + \tW_{31})$ & $-(\tW_{21} + 2\tW_{31})$ \\
+  ladder    & $\tE_{31}$ & $n_{21}$, $n_{32}$ & $-(2\tW_{21} - \tW_{32})$ & $-(2\tW_{32} - \tW_{21})$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+In the $\Lambda$ configuration, emission on either transition empties the
+shared upper level and lowers both inversions: the two transitions compete
+for one population. The V configuration has the same structure with the
+shared level at the bottom: emission on either transition fills level~1 and
+again lowers both inversions.
+
+The ladder differs in the sign of the cross term. Emission on the upper step,
+$\tW_{32} > 0$, fills level~2 and therefore \emph{raises} $n_{21}$, while
+emission on the lower step, $\tW_{21} > 0$, empties level~2 and raises
+$n_{32}$. The two steps feed each other's inversion in a cascade.
+
+In each configuration the coherence of the forbidden pair, $R_{21}$ for
+$\Lambda$, $R_{32}$ for V and $R_{31}$ for the ladder, carries no field and is
+generated only through the product terms of
+Eqs.~(\ref{eq:dimR21})--(\ref{eq:dimR32}). If one allowed transition starts
+with neither coherence nor incident field, it stays without both, the
+forbidden coherence stays zero, and the model reduces to the two-level
+equations for the other transition. A nonzero initial coherence or incident
+field on both allowed transitions is needed for the three-level coupling to
+act.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Relaxation and Pumping}
+\label{sec:relax}
+
+Non-coherent processes are added phenomenologically. The two population
+differences of the allowed transitions relax towards their reference values
+with times $T_a^{(1)}$, $T_b^{(1)}$, and pumps $\Lambda_a$, $\Lambda_b$ act on
+them:
+\begin{equation}
+  \pderiv{n_a}{\tau} = \left(\pderiv{n_a}{\tau}\right)_{\!\text{coh}}
+     - \frac{n_a - n_a^0}{\tau_a^{(1)}} + \tilde{\Lambda}_a ,
+  \label{eq:relaxn}
+\end{equation}
+and likewise for $n_b$. All three coherences dephase towards their reference
+values,
+\begin{equation}
+  \pderiv{R_{ij}}{\tau} = \left(\pderiv{R_{ij}}{\tau}\right)_{\!\text{coh}}
+     - \frac{R_{ij} - R_{ij}^0}{\tau_{ij}^{(2)}} ,
+  \label{eq:relaxR}
+\end{equation}
+with the scaled times and pumps
+\begin{equation}
+  \tau_{ij}^{(k)} = \frac{T_{ij}^{(k)}}{\T}, \qquad
+  \tilde{\Lambda}_{ij} = \T\,\Lambda_{ij}.
+\end{equation}
+These terms represent the net effect of pumping and non-coherent transfer
+through the full level structure of the molecule; they need not correspond to
+direct transfer rates among the three levels. The equations contain the
+populations only through $n_a$ and $n_b$, so these two differences, the
+coherences and the fields form a closed system. The total population
+$n_1 + n_2 + n_3$, which pumping and relaxation need not conserve, does not
+enter.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Real-Variable Reduction}
+\label{subsec:real}
+
+If the initial coherences $R_{ij}^0$ and the entrance fields
+$\tE_{ij}(0,\tau)$ are real, the right-hand sides of
+Eqs.~(\ref{eq:dimpop})--(\ref{eq:dimE}) and
+(\ref{eq:relaxn})--(\ref{eq:relaxR}) are real whenever the variables are, so
+all variables stay real. Then $\tW_{ij} = \tfrac12\tE_{ij}R_{ij}$ and the
+system becomes
+
+\begin{resultbox}
+\begin{align}
+  \pderiv{n_a}{\tau} &= \left(\pderiv{n_a}{\tau}\right)_{\!\text{coh}}
+     - \frac{n_a - n_a^0}{\tau_a^{(1)}} + \tilde{\Lambda}_a,
+  \qquad \text{and likewise for } n_b,
+  \label{eq:rn}\\[6pt]
+  \pderiv{R_{21}}{\tau} &= \tE_{21}\,n_{21}
+     + \tfrac12\left(\tE_{31}R_{32} + \tE_{32}R_{31}\right)
+     - \frac{R_{21} - R_{21}^0}{\tau_{21}^{(2)}},\\[4pt]
+  \pderiv{R_{31}}{\tau} &= \tE_{31}\,n_{31}
+     + \tfrac12\left(\tE_{21}R_{32} - \tE_{32}R_{21}\right)
+     - \frac{R_{31} - R_{31}^0}{\tau_{31}^{(2)}},\\[4pt]
+  \pderiv{R_{32}}{\tau} &= \tE_{32}\,n_{32}
+     - \tfrac12\left(\tE_{21}R_{31} + \tE_{31}R_{21}\right)
+     - \frac{R_{32} - R_{32}^0}{\tau_{32}^{(2)}},\\[6pt]
+  \pderiv{\tE_{ij}}{\xi} &= \eta_{ij}\,R_{ij},
+  \label{eq:rE}
+\end{align}
+\end{resultbox}
+
+with the coherent parts of $\partial_\tau n_a$ and $\partial_\tau n_b$ from
+the table of Section~\ref{sec:configs}, now with
+$\tW_{ij} = \tfrac12\tE_{ij}R_{ij}$, and the field of the forbidden transition
+zero.
+
+\begin{notebox}
+  Equations~(\ref{eq:rn})--(\ref{eq:rE}) are the system solved by
   \code{mbsolver.three\_level.solve\_1d}: fourth-order Runge--Kutta in
   $\tau$ at each $\xi$, and an explicit step in $\xi$ for the fields. They
   hold unchanged when the relaxation times depend on time.
@@ -331,37 +432,10 @@ $R_{21}^* = R_{21}$, and the system becomes
 
 \subsection{Populations}
 
-The initial populations are given by the ratios
-\begin{equation}
-  r_1 = \frac{n_3^0}{n_1^0}, \qquad r_2 = \frac{n_3^0}{n_2^0},
-\end{equation}
-which, with $n_1^0 + n_2^0 + n_3^0 = 1$, give
-\begin{equation}
-  n_1^0 = \frac{r_2}{r_1 + r_2 + r_1 r_2}, \qquad
-  n_2^0 = \frac{r_1}{r_1 + r_2 + r_1 r_2}, \qquad
-  n_3^0 = \frac{r_1 r_2}{r_1 + r_2 + r_1 r_2},
-\end{equation}
-and the population differences
-\begin{equation}
-  n_{31}^0 = \frac{r_2(r_1 - 1)}{r_1 + r_2 + r_1 r_2}, \qquad
-  n_{32}^0 = \frac{r_1(r_2 - 1)}{r_1 + r_2 + r_1 r_2}.
-  \label{eq:n0}
-\end{equation}
-The $3\rightarrow j$ transition is inverted when $r_j > 1$. The mixed
-configuration of the paper, an inverted $3\rightarrow2$ transition with a
-non-inverted $3\rightarrow1$ leakage pathway, is $r_1 < 1 < r_2$. The
-reference values $n_{3j}^0$ of the relaxation terms are these initial
-values, the same at every $\xi$. All physical initial states lie in the
-triangle of Fig.~\ref{fig:ics}.
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.45\textwidth]{figures/initial_conditions.pdf}
-  \caption{Allowed initial population differences. The corners are all
-  molecules in $|3\rangle$ $(1, 1)$, in $|2\rangle$ $(-1, 0)$ and in
-  $|1\rangle$ $(0, -1)$.}
-  \label{fig:ics}
-\end{figure}
+The initial populations $n_1^0$, $n_2^0$, $n_3^0$ are given directly, with
+$n_1^0 + n_2^0 + n_3^0 = 1$ and $n_i^0 \ge 0$. They fix the initial
+differences $n_{ij}^0 = n_i^0 - n_j^0$, which are also the reference values
+of the relaxation terms, the same at every $\xi$.
 
 \subsection{Coherences}
 
@@ -374,60 +448,74 @@ and is given as a fraction $c_{ij}$ of this bound,
 \begin{equation}
   R_{ij}^0 = c_{ij}\,\mathcal{R}_{ij}^{\max}, \qquad |c_{ij}| \le 1.
 \end{equation}
-Since no field drives the forbidden transition, the paper takes $c_{21} = 0$.
-In terms of $r_1$ and $r_2$,
-\begin{equation}
-  \mathcal{R}_{31}^{\max} = \frac{2 r_2\sqrt{r_1}}{r_1 + r_2 + r_1 r_2}, \qquad
-  \mathcal{R}_{32}^{\max} = \frac{2 r_1\sqrt{r_2}}{r_1 + r_2 + r_1 r_2}, \qquad
-  \mathcal{R}_{21}^{\max} = \frac{2\sqrt{r_1 r_2}}{r_1 + r_2 + r_1 r_2}.
-\end{equation}
+A small $c_{ij}$ on an inverted transition seeds its emission, as $\theta_0$
+does in the two-level model.
 
 \subsection{Boundary conditions}
 
-The fields entering the sample, $\tE_{3j}(0,\tau)$, are given; for emission
-generated by the medium itself they are zero. With uniform initial
-coherences, Eq.~(\ref{eq:rfields}) gives the fields at the exit at $\tau = 0$:
-$\tE_{31}(1,0) = \tE_{31}(0,0) + \eta R_{31}^0$ and
-$\tE_{32}(1,0) = \tE_{32}(0,0) + R_{32}^0$.
+The fields entering the sample, $\tE_{ij}(0,\tau)$, are given for the two
+allowed transitions; for emission generated by the medium itself they are
+zero. With uniform initial coherences, Eq.~(\ref{eq:rE}) gives the fields at
+the exit at $\tau = 0$:
+$\tE_{ij}(1,0) = \tE_{ij}(0,0) + \eta_{ij} R_{ij}^0$.
 
 % ══════════════════════════════════════════════════════════════════════════════
 \section{Physical Scales}
 \label{sec:scales}
 
-\subsection{Time scale}
+\subsection{Cooperation times}
 
-With the Einstein coefficient of the $3\rightarrow2$ transition,
+With the Einstein coefficient of the $i\rightarrow j$ transition,
 \begin{equation}
-  \Gamma_{32} = \frac{\omega_{32}^3 |d_{32}|^2}{3\pi\epsilon_0\hbar c^3}
-  = \frac{k_{32}^3 |d_{32}|^2}{3\pi\epsilon_0\hbar},
+  \Gamma_{ij} = \frac{\omega_{ij}^3 |d_{ij}|^2}{3\pi\epsilon_0\hbar c^3}
+  = \frac{k_{ij}^3 |d_{ij}|^2}{3\pi\epsilon_0\hbar},
 \end{equation}
-the time scale~(\ref{eq:T0}) can be written in the two-level form
+the cooperation time~(\ref{eq:eta}) takes the two-level form
 \begin{equation}
-  \T = \frac{2\epsilon_0\hbar}{n_0 L k_{32} |d_{32}|^2}
-     = \frac{2 k_{32}^2}{3\pi\,\Gamma_{32}\, n_0 L}
-     = \frac{8\pi}{3\,\Gamma_{32}\, n_0 L \lambda_{32}^2}.
+  \TR{ij} = \frac{2\epsilon_0\hbar}{n_0 L k_{ij} |d_{ij}|^2}
+     = \frac{2 k_{ij}^2}{3\pi\,\Gamma_{ij}\, n_0 L}
+     = \frac{8\pi}{3\,\Gamma_{ij}\, n_0 L \lambda_{ij}^2}.
 \end{equation}
-Both forms agree when $\Gamma_{32}$ is computed from $d_{32}$; with a
+Both forms agree when $\Gamma_{ij}$ is computed from $d_{ij}$; with a
 measured decay rate they differ by the ratio of the two rates.
 
-\subsection{Fields, intensities and pump}
+\subsection{Fields, intensities and pumps}
 
-The dimensionless fields are Rabi frequencies, Eq.~(\ref{eq:Etilde}). In
-units of the field scale of the $3\rightarrow2$ transition,
+The dimensionless fields are Rabi frequencies, Eq.~(\ref{eq:Etilde}). Each
+transition has its own field and intensity scale,
 \begin{equation}
-  E_0 = \frac{\hbar}{\T |d_{32}|},
+  E_0^{(ij)} = \frac{\hbar}{\T |d_{ij}|}, \qquad
+  I_0^{(ij)} = \tfrac12\epsilon_0 c \bigl(E_0^{(ij)}\bigr)^2,
 \end{equation}
-the field amplitudes are $|E_{32}|/E_0 = |\tE_{32}|$ and
-$|E_{31}|/E_0 = |\tE_{31}|/d$. Both intensities are therefore given in the
-same unit,
+so that the field amplitude is $|E_{ij}| = E_0^{(ij)}|\tE_{ij}|$ and the
+cycle-averaged intensity is
 \begin{equation}
-  I_{31} = I_0\,\frac{|\tE_{31}|^2}{d^2}, \qquad
-  I_{32} = I_0\,|\tE_{32}|^2, \qquad
-  I_0 = \tfrac12\epsilon_0 c E_0^2,
+  I_{ij} = I_0^{(ij)}\,|\tE_{ij}|^2 .
 \end{equation}
-and a pump rate $\Lambda$ in $\mathrm{m^{-3}\,s^{-1}}$ (molecules per volume
-and time) corresponds to the dimensionless pump
-$\tilde{\Lambda} = \Lambda/\Lambda_0$ with $\Lambda_0 = n_0/\T$.
+A pump rate $\Lambda$ in $\mathrm{m^{-3}\,s^{-1}}$ (molecules per volume and
+time) corresponds to the dimensionless pump $\tilde{\Lambda} = \Lambda/\Lambda_0$
+with $\Lambda_0 = n_0/\T$.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Closed Loop}
+\label{sec:loop}
+
+When all three dipoles are nonzero, Eqs.~(\ref{eq:dimpop})--(\ref{eq:dimE})
+still hold, but the dynamics depends on the loop phase
+$\arg(\tE_{31}\tE_{32}^*\tE_{21}^*)$, which includes the phase of
+$d_{31}^*d_{32}d_{21}$ and cannot be removed by rephasing the coherences
+\cite{Kosachiov1992}; the real restriction fixes it at $0$ or $\pi$. The
+three population differences are then not independent, and the relaxation of
+Section~\ref{sec:relax} must be replaced by a model for the populations
+themselves. A closed loop requires levels without definite parity, as in
+symmetry-broken artificial atoms \cite{Liu2005}; it does not occur for
+electric-dipole transitions between parity eigenstates. The solver does not
+treat this case.
+
+Three-level Bloch equations in coherence-vector form were given by Hioe and
+Eberly \cite{HioeEberly1981}, and the simultaneous propagation of two fields
+in three-level media was treated by Konopnicki and Eberly
+\cite{KonopnickiEberly1981}.
 
 % ══════════════════════════════════════════════════════════════════════════════
 \section{In the Code}
@@ -435,9 +523,12 @@ $\tilde{\Lambda} = \Lambda/\Lambda_0$ with $\Lambda_0 = n_0/\T$.
 
 \subsection{Solver}
 
-\code{mbsolver.three\_level.solve\_1d} takes the dimensionless parameters
-(times in units of $\T$) and returns the variables on \code{n\_planes}
-evenly spaced planes $\xi \in [0, 1]$:
+\code{mbsolver.three\_level.solve\_1d} takes the configuration and the
+dimensionless parameters (times in units of $\T$) and returns the variables
+on \code{n\_planes} evenly spaced planes $\xi \in [0, 1]$. Parameters are
+given only for the allowed transitions of the chosen configuration
+($ij = 31, 32$ for $\Lambda$; $21, 31$ for V; $21, 32$ for the ladder);
+\code{t2\_ij} exists for all three coherences.
 
 \begin{center}
 \small
@@ -445,107 +536,38 @@ evenly spaced planes $\xi \in [0, 1]$:
   \toprule
   Symbol & Argument & Result \\
   \midrule
+  configuration                 & \code{config} (\code{"lambda"}, \code{"v"}, \code{"ladder"}) & --- \\
   $\tau$ grid, $\xi$ grid       & \code{t\_max}, \code{nt}, \code{nz} & \code{res.time}, \code{res.z} \\
-  $d$, $\omega$ ($\eta = \omega d^2$) & \code{d}, \code{omega}      & --- \\
-  $r_1$, $r_2$                  & \code{r1}, \code{r2}                & --- \\
-  $c_{31}$, $c_{32}$, $c_{21}$  & \code{c31}, \code{c32}, \code{c21} (default 0) & --- \\
-  $\tau_{31}^{(1)}$, $\tau_{32}^{(1)}$ & \code{t1\_31}, \code{t1\_32} & \code{res.t1\_31}, \code{res.t1\_32} \\
-  $\tau_{31}^{(2)}$, $\tau_{32}^{(2)}$, $\tau_{21}^{(2)}$
-                                & \code{t2\_31}, \code{t2\_32}, \code{t2\_21} (default $\infty$)
-                                & \code{res.t2\_31}, \dots \\
-  $\tilde{\Lambda}_{31}$, $\tilde{\Lambda}_{32}$ & \code{pump31}, \code{pump32} & \code{res.pump31}, \code{res.pump32} \\
-  $\tE_{31}(0,\tau)$, $\tE_{32}(0,\tau)$ & \code{field31\_in}, \code{field32\_in} & \code{res.field31\_in}, \dots \\
-  $\tE_{31}$, $\tE_{32}$        & ---                                 & \code{res.e31}, \code{res.e32} \\
-  $|\tE_{31}|^2/d^2$, $|\tE_{32}|^2$ & ---                            & \code{res.intensity31}, \code{res.intensity32} \\
-  $n_{31}$, $n_{32}$            & ---                                 & \code{res.n31}, \code{res.n32} \\
-  $R_{31}$, $R_{32}$, $R_{21}$  & ---                                 & \code{res.r31}, \code{res.r32}, \code{res.r21} \\
+  $\eta_{ij}$                   & \code{eta21}, \code{eta31}, \code{eta32} & --- \\
+  $n_1^0$, $n_2^0$, $n_3^0$     & \code{n\_init} (tuple, sum 1)       & --- \\
+  $c_{ij}$                      & \code{c21}, \code{c31}, \code{c32} (default 0) & --- \\
+  $\tau_{ij}^{(1)}$             & \code{t1\_ij}                       & \code{res.t1\_ij} \\
+  $\tau_{ij}^{(2)}$             & \code{t2\_ij} (forbidden pair: default $\infty$) & \code{res.t2\_ij} \\
+  $\tilde{\Lambda}_{ij}$        & \code{pumpij}                       & \code{res.pumpij} \\
+  $\tE_{ij}(0,\tau)$            & \code{fieldij\_in}                  & \code{res.fieldij\_in} \\
+  $\tE_{21}$, $\tE_{31}$, $\tE_{32}$ & ---                            & \code{res.e21}, \code{res.e31}, \code{res.e32} \\
+  $n_{21}$, $n_{31}$, $n_{32}$  & ---                                 & \code{res.n21}, \code{res.n31}, \code{res.n32} \\
+  $R_{21}$, $R_{31}$, $R_{32}$  & ---                                 & \code{res.r21}, \code{res.r31}, \code{res.r32} \\
   \bottomrule
 \end{tabular}
 \end{center}
 
-Relaxation times are numbers or \code{Steps} (\code{math.inf} for none);
-pumps and entrance fields are \code{Pulse}s, numbers or lists of them.
+The field of the forbidden transition is returned as zeros. Relaxation times
+are numbers or \code{Steps} (\code{math.inf} for none); pumps and entrance
+fields are \code{Pulse}s, numbers or lists of them.
 
-\subsection{Helpers}
+\subsection{Physical scales}
 
-\code{mbsolver.three\_level.populations(r1, r2)} returns $n_1^0$, $n_2^0$,
-$n_3^0$, $n_{31}^0$, $n_{32}^0$ and $\mathcal{R}_{31}^{\max}$,
-$\mathcal{R}_{32}^{\max}$, $\mathcal{R}_{21}^{\max}$
-(Section~\ref{sec:ics}).
-
-\code{mbsolver.three\_level.scaling(nu31, nu32, d31, d32, l, n0, gamma=None)}
-takes the frequencies $\nu_{3j} = \omega_{3j}/2\pi$ (Hz), the dipole moments
-(C\,m; \code{mbsolver.constants.DEBYE} converts from debye), $L$ (m) and
-$n_0$ (m$^{-3}$) and returns $d$, $\omega$, $\eta$, $k_{3j}$,
-$\lambda_{3j}$, $\Gamma_{32}$, $\T$, $E_0$, $I_0$, $10^{26} I_0$
-(\code{i0\_jy}, used to plot intensities in Jy) and $\Lambda_0$
+\code{mbsolver.three\_level.scaling} takes $\T$ (s), $L$ (m), $n_0$
+(m$^{-3}$) and, for each allowed transition, its frequency
+$\nu_{ij} = \omega_{ij}/2\pi$ (Hz) and either its dipole moment $|d_{ij}|$
+(C\,m; \code{mbsolver.constants.DEBYE} converts from debye) or its
+Einstein coefficient $\Gamma_{ij}$ (s$^{-1}$). It returns, for each
+transition, $\eta_{ij}$, $\TR{ij}$, $\Gamma_{ij}$, $|d_{ij}|$, $k_{ij}$,
+$\lambda_{ij}$, $E_0^{(ij)}$ and $I_0^{(ij)}$, and $\Lambda_0$
 (Section~\ref{sec:scales}).
-By default $\Gamma_{32}$ is computed from $d_{32}$; \code{gamma} replaces it
-with a given rate.
-
-% ══════════════════════════════════════════════════════════════════════════════
-\section{Example: S255IR-NIRS3}
-\label{sec:s255}
-
-The 6.7~GHz methanol flare in S255IR-NIRS3 was observed with the Toru\'n
-32~m telescope \cite{Szymczak2018} during the accretion burst of the
-central massive protostar \cite{Caratti2017}. Rajabi et al.\
-\cite{Rajabi2019} modelled it as Dicke superradiance \cite{Dicke1954}
-with the two-level \mb{} equations used for astrophysical masers
-\cite{RajabiHoude2016a,RajabiHoude2016b,RajabiHoude2017}. The three-level
-model adds the 239.7~GHz transition, which shares the upper level of the
-6.7~GHz line and decays more than four orders of magnitude faster.
-
-\begin{center}
-\begin{tabular}{@{}llll@{}}
-  \toprule
-  Transition & Levels & $\nu$ (MHz) & $d$ (D) \\
-  \midrule
-  $3\rightarrow1$ & $5_1\,A^+ \rightarrow 4_1\,A^+$ & 239\,746.219 & 0.59425 \\
-  $3\rightarrow2$ & $5_1\,A^+ \rightarrow 6_0\,A^+$ & \phantom{00}6\,668.564 & 0.67936 \\
-  \bottomrule
-\end{tabular}
-\end{center}
-
-These give $d = 0.8747$, $\omega = 35.95$ and $\eta = 27.51$. From $d_{3j}$,
-$\Gamma_{31} = 5.66\times10^{-5}\ \mathrm{s^{-1}}$ and
-$\Gamma_{32} = 1.59\times10^{-9}\ \mathrm{s^{-1}}$.
-
-The sample values are those of the two-level fit: $L = 2.1\times10^{13}$~m,
-$\Gamma_{32} = 1.56\times10^{-9}\ \mathrm{s^{-1}}$, initial Bloch angle
-$\theta_0 = 4.14\times10^{-10}$ and density $n_0^{(2)} = 1.17\times10^{-6}\
-\mathrm{m^{-3}}$ of molecules in levels 2 and 3. The two-level inversion
-$\cos\theta_0 = (n_3 - n_2)/(n_3 + n_2)$ fixes
-\begin{equation}
-  r_2 = \frac{1 + \cos\theta_0}{1 - \cos\theta_0} = \cot^2\frac{\theta_0}{2}
-  \simeq 2.33\times10^{19},
-\end{equation}
-and the three-level density counts level 1 as well,
-\begin{equation}
-  n_0 = n_0^{(2)}\,\frac{n_1 + n_2 + n_3}{n_2 + n_3}
-      = n_0^{(2)}\,\frac{r_1 + r_2 + r_1 r_2}{r_1(1 + r_2)}.
-\end{equation}
-With $r_1 = 0.94$, $c_{31} = 10^{-10}$ and $c_{32} = 1$, this gives
-$n_0 = 2.41\times10^{-6}\ \mathrm{m^{-3}}$ and, with the measured
-$\Gamma_{32}$, $\T \simeq 5.24\times10^{4}$~s. The relaxation times
-$T_{32}^{(1)} = 1.64\times10^{7}$~s and $T_{32}^{(2)} = 1.55\times10^{6}$~s
-are those of the two-level fit, and the $3\rightarrow1$ times are ten times
-shorter. The flare is driven by the pump
-$\Lambda_{32}(t) = \Lambda_1\,\mathrm{sech}^2[(t - t_p)/T_p]$ with
-$\Lambda_1 = 2.6\times10^{-13}\ \mathrm{m^{-3}\,s^{-1}}$ and
-$T_p = 8.1\times10^{6}$~s ($\tau_p = T_p/\T \simeq 155$), centred at
-$t_p = 795.5\,\T$.
-
-\code{examples/three\_level/s255\_flare.py} runs this case for
-$r_1 = 0.79$, 0.89 and 0.94 and plots both intensities in Jy with the
-observed 6.7~GHz flux of \cite{Szymczak2018}.
 
 \begin{thebibliography}{99}
-\bibitem{Dicke1954}
-R.~H. Dicke, Coherence in spontaneous radiation processes,
-\emph{Phys.\ Rev.} \textbf{93}, 99 (1954).
-\href{https://doi.org/10.1103/PhysRev.93.99}{doi:10.1103/PhysRev.93.99}
-
 \bibitem{GrossHaroche1982}
 M.~Gross and S.~Haroche, Superradiance: an essay on the theory of collective
 spontaneous emission, \emph{Phys.\ Rep.} \textbf{93}, 301 (1982).
@@ -556,36 +578,29 @@ M.~G. Benedict, A.~M. Ermolaev, V.~A. Malyshev, I.~V. Sokolov and
 E.~D. Trifonov, \emph{Super-radiance: Multiatomic Coherent Emission}
 (Institute of Physics Publishing, Bristol, 1996).
 
-\bibitem{RajabiHoude2016a}
-F.~Rajabi and M.~Houde, Dicke's superradiance in astrophysics.\ I.\ The
-21~cm line, \emph{ApJ} \textbf{826}, 216 (2016).
-\href{https://doi.org/10.3847/0004-637X/826/2/216}{doi:10.3847/0004-637X/826/2/216}
+\bibitem{Kosachiov1992}
+D.~V. Kosachiov, B.~G. Matisov and Yu.~V. Rozhdestvensky, Coherent phenomena
+in multilevel systems with closed interaction contour, \emph{J.\ Phys.\ B}
+\textbf{25}, 2473 (1992).
+\href{https://doi.org/10.1088/0953-4075/25/11/005}{doi:10.1088/0953-4075/25/11/005}
 
-\bibitem{RajabiHoude2016b}
-F.~Rajabi and M.~Houde, Dicke's superradiance in astrophysics.\ II.\ The
-OH 1612~MHz line, \emph{ApJ} \textbf{828}, 57 (2016).
+\bibitem{Liu2005}
+Y.-x. Liu, J.~Q. You, L.~F. Wei, C.~P. Sun and F.~Nori, Optical selection
+rules and phase-dependent adiabatic state control in a superconducting quantum
+circuit, \emph{Phys.\ Rev.\ Lett.} \textbf{95}, 087001 (2005).
+\href{https://doi.org/10.1103/PhysRevLett.95.087001}{doi:10.1103/PhysRevLett.95.087001}
 
-\bibitem{RajabiHoude2017}
-F.~Rajabi and M.~Houde, Explaining recurring maser flares in the ISM through
-large-scale entangled quantum mechanical states, \emph{Sci.\ Adv.}
-\textbf{3}, e1601858 (2017).
+\bibitem{HioeEberly1981}
+F.~T. Hioe and J.~H. Eberly, $N$-level coherence vector and higher
+conservation laws in quantum optics and quantum mechanics,
+\emph{Phys.\ Rev.\ Lett.} \textbf{47}, 838 (1981).
+\href{https://doi.org/10.1103/PhysRevLett.47.838}{doi:10.1103/PhysRevLett.47.838}
 
-\bibitem{Caratti2017}
-A.~Caratti o Garatti et al., Disk-mediated accretion burst in a high-mass
-young stellar object, \emph{Nat.\ Phys.} \textbf{13}, 276 (2017).
-\href{https://doi.org/10.1038/nphys3942}{doi:10.1038/nphys3942}
-
-\bibitem{Szymczak2018}
-M.~Szymczak, M.~Olech, P.~Wolak, E.~G\'erard and A.~Bartkiewicz, Giant
-burst of methanol maser in S255IR-NIRS3, \emph{A\&A} \textbf{617}, A80
-(2018).
-\href{https://doi.org/10.1051/0004-6361/201833443}{doi:10.1051/0004-6361/201833443}
-
-\bibitem{Rajabi2019}
-F.~Rajabi, M.~Houde, A.~Bartkiewicz, M.~Olech, M.~Szymczak and P.~Wolak,
-New evidence for Dicke's superradiance in the 6.7~GHz methanol spectral line
-in the interstellar medium, \emph{MNRAS} \textbf{484}, 1590 (2019).
-\href{https://doi.org/10.1093/mnras/stz074}{doi:10.1093/mnras/stz074}
+\bibitem{KonopnickiEberly1981}
+M.~J. Konopnicki and J.~H. Eberly, Simultaneous propagation of short
+different-wavelength optical pulses, \emph{Phys.\ Rev.\ A} \textbf{24}, 2567
+(1981).
+\href{https://doi.org/10.1103/PhysRevA.24.2567}{doi:10.1103/PhysRevA.24.2567}
 \end{thebibliography}
 
 \DocFooter
