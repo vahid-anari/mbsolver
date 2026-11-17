@@ -233,7 +233,7 @@ Vahid Anari ·
 [ORCID](https://orcid.org/0000-0002-2464-3989)
 
 Toktam Rashidi ·
-[GitHub](https://github.com/ToktamS) ·
+[GitHub](https://github.com/toktamrashidi) ·
 [LinkedIn](https://www.linkedin.com/in/toktam-r-71951996/) ·
 [ORCID](https://orcid.org/0009-0007-2978-7985)
 

@@ -9,6 +9,10 @@ then gives the release its own DOI.
 - Tests: small-signal gain of the two-level model (`solve_1d` and `solve_1d_adiabatic`): a weak
   field grows by the factor `1 + η T2 w0 Δz` per z step, which tends to `exp(η T2 w0 z)`. One sentence
   on this in `two_level.pdf`. No change to the solvers.
+- `two_level.pdf`: corrections — cycle-averaged intensity `I0 |A'|²` in the magnetic-case table (was
+  `I0 |A'|² sin²`, a factor 2 off as an instantaneous value); `d` taken real and positive when recovering
+  the physical fields; superradiance needs `T_R ≪ T1, T2`; `solve_1d` also returns `R` (since 0.6.0);
+  transverse fields stated in the wave equations; a broken sentence fixed; the astrophysics citations removed.
 
 ## 0.6.1 — 2026-10-23
 

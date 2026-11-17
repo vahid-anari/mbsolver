@@ -121,7 +121,8 @@ with constitutive relations
 
 \subsection{General wave equations}
 
-Taking the curl of the curl equations and using the constitutive relations
+Taking the curl of the curl equations, using the constitutive relations and
+transverse fields ($\nabla\cdot\mathbf{E} = \nabla\cdot\mathbf{B} = 0$)
 gives the general wave equations for $\mathbf{E}$ and $\mathbf{B}$:
 \begin{equation}
   \nabla^2\mathbf{E} - \mu_0\epsilon_0\pderiv{^2\mathbf{E}}{t^2}
@@ -184,7 +185,7 @@ the peak amplitude of the field.
 
 Substituting the envelope decomposition into Eq.~(\ref{eq:rho21full}),
 collecting terms at the resonant frequency $e^{i(kz-\omega t)}$,
-and dropping the fast counter-rotating terms (RWA). we define the detuning
+and dropping the fast counter-rotating terms (RWA), with the detuning
 \begin{equation}
   \Delta = \omega - \omega_0,
 \end{equation}
@@ -423,7 +424,8 @@ We define the field and polarization amplitude scales
   E_0 = \frac{\hbar}{|d|\,\T}, \qquad P_0 = n_0\,|d|.
 \end{equation}
 
-Given the dimensionless solution $A'(z',\tau')$, the instantaneous
+Taking $d$ real and positive (its phase can be absorbed into the state
+$|2\rangle$) and given the dimensionless solution $A'(z',\tau')$, the instantaneous
 electric field and macroscopic polarization are recovered as
 \begin{equation}
   E(z,t) = E_0\operatorname{Re}\!\left[-iA'(z',\tau')\,e^{i(kz-\omega t)}\right],
@@ -434,10 +436,10 @@ electric field and macroscopic polarization are recovered as
 
 Since the carrier $e^{i(kz-\omega t)}$ oscillates much faster than the
 envelopes $A'$ and $R$, physical detectors respond only to the slowly
-varying amplitudes. The observable intensity is therefore proportional
-to $|A'|^2$.
+varying amplitudes. The observable (cycle-averaged) intensity is
+$I = I_0\,|A'|^2$ with $I_0 = \epsilon_0 c E_0^2/2$.
 
-In the real case (Subsection~\ref{subsec:real}), and taking $d$ real, $A'$ and $R$ are real, and the fields reduce to
+In the real case (Subsection~\ref{subsec:real}) $A'$ and $R$ are real, and the fields reduce to
 \begin{equation}
   E(z,t) = E_0\,A'(z',\tau')\sin(kz-\omega t),
 \end{equation}
@@ -515,8 +517,8 @@ at each stage of the derivation.
   Medium response
     & $P_0\,R\cos(kz-\omega t)$
     & $M_0\,R\cos(kz-\omega t)$ \\[6pt]
-  Intensity
-    & \multicolumn{2}{c}{$I_0\,|A'|^2\sin^2(kz-\omega t)$} \\[6pt]
+  Intensity (cycle average)
+    & \multicolumn{2}{c}{$I_0\,|A'|^2$} \\[6pt]
   \bottomrule
 \end{tabular}
 \end{center}
@@ -538,12 +540,9 @@ result in both cases:
   \label{eq:TRgamma}
 \end{equation}
 The cooperation time is therefore inversely proportional to $n_0$, $L$,
-and $\Gamma$. For a sufficiently dense and inverted medium, $T_R \ll T_1$
+and $\Gamma$. For a sufficiently dense and inverted medium, $T_R \ll T_1, T_2$
 and the system enters the superradiant regime \cite{Dicke1954,GrossHaroche1982}.
-These equations have been applied to astrophysical masers and superradiance,
-for example to the 21~cm and OH 1612~MHz lines \cite{RajabiHoude2016a,RajabiHoude2016b},
-recurring maser flares \cite{RajabiHoude2017} and the 6.7~GHz methanol flare
-in S255IR-NIRS3 \cite{Rajabi2019}. The function
+The function
 \code{mbsolver.scaling} computes $T_R$, $\eta$ and the other scales from
 $\nu$, $\Gamma$, $\T$, $L$ and $n_0$ (Section~\ref{sec:code}).
 
@@ -618,7 +617,7 @@ Eqs.~(\ref{eq:realw})--(\ref{eq:realA}) with fourth-order Runge--Kutta in
 $\tau'$ and an explicit step in $z'$. Its arguments and results map onto
 the symbols as follows (all dimensionless, times in units of $\T$).
 \code{solve\_1d\_adiabatic} (Section~\ref{sec:adiabatic}) takes the same
-arguments and returns the same result, plus $R$.
+arguments and returns the same result.
 
 \begin{center}
 \begin{tabular}{@{}lll@{}}
@@ -660,25 +659,6 @@ M.~G. Benedict, A.~M. Ermolaev, V.~A. Malyshev, I.~V. Sokolov and
 E.~D. Trifonov, \emph{Super-radiance: Multiatomic Coherent Emission}
 (Institute of Physics Publishing, Bristol, 1996).
 
-\bibitem{RajabiHoude2016a}
-F.~Rajabi and M.~Houde, Dicke's superradiance in astrophysics.\ I.\ The
-21~cm line, \emph{ApJ} \textbf{826}, 216 (2016).
-\href{https://doi.org/10.3847/0004-637X/826/2/216}{doi:10.3847/0004-637X/826/2/216}
-
-\bibitem{RajabiHoude2016b}
-F.~Rajabi and M.~Houde, Dicke's superradiance in astrophysics.\ II.\ The
-OH 1612~MHz line, \emph{ApJ} \textbf{828}, 57 (2016).
-
-\bibitem{RajabiHoude2017}
-F.~Rajabi and M.~Houde, Explaining recurring maser flares in the ISM through
-large-scale entangled quantum mechanical states, \emph{Sci.\ Adv.}
-\textbf{3}, e1601858 (2017).
-
-\bibitem{Rajabi2019}
-F.~Rajabi, M.~Houde, A.~Bartkiewicz, M.~Olech, M.~Szymczak and P.~Wolak,
-New evidence for Dicke's superradiance in the 6.7~GHz methanol spectral line
-in the interstellar medium, \emph{MNRAS} \textbf{484}, 1590 (2019).
-\href{https://doi.org/10.1093/mnras/stz074}{doi:10.1093/mnras/stz074}
 \end{thebibliography}
 
 \DocFooter
