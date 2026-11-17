@@ -162,8 +162,8 @@ import math
 import mbsolver
 from mbsolver.two_level import solve_1d
 
-s = mbsolver.scaling(nu=6.67e9, gamma=1.56e-9, t0=86400, l=7.5e12, n0=5.3e-7)
-res = solve_1d(t_max=2000, nt=20001, nz=101, eta=s["eta"], theta0=s["theta0"],
+s = mbsolver.scaling(nu=1.0e9, gamma=1.0e-8, t0=1.0e4, l=1.0e12, n0=1.0e-5)   # η ≈ 10.7
+res = solve_1d(t_max=100, nt=20001, nz=101, eta=s["eta"], theta0=s["theta0"],
                t1=math.inf, t2=math.inf)
 ```
 
@@ -172,6 +172,17 @@ Besides `eta` (η = T₀/T_R) and `theta0` (θ₀ = 2/√N), the result holds `t
 and intensity scales for an electric dipole (`d`, `e0`, `p0`, `i0_electric`)
 and a magnetic dipole (`mu`, `b0`, `m0`, `i0_magnetic`). Times in the solver
 are in units of `t0`.
+
+## Examples
+
+Two short scripts in [`examples/`](examples) (in the repository, not in the
+PyPI package; they need matplotlib):
+
+- [`examples/two_level/burst.py`](examples/two_level/burst.py): superradiant
+  bursts of a fully inverted two-level medium for three couplings η.
+- [`examples/three_level/configurations.py`](examples/three_level/configurations.py):
+  the Λ, V and ladder configurations side by side, showing the competition for
+  a shared level and the ladder's cascade.
 
 ## Profiles
 

@@ -20,6 +20,9 @@ then gives the release its own DOI.
   phenomenological relaxation, initial conditions from `n_init`, per-transition scales, the closed-loop case.
 - Removed the three-level example with observational data (`examples/three_level/`) and the
   initial-conditions figure.
+- Examples: `examples/two_level/burst.py` (superradiant bursts for three couplings) and
+  `examples/three_level/configurations.py` (Λ, V and ladder side by side). The `scaling` example in
+  the README uses generic values.
 - Tests: small-signal gain of the two-level model (`solve_1d` and `solve_1d_adiabatic`): a weak
   field grows by the factor `1 + η T2 w0 Δz` per z step, which tends to `exp(η T2 w0 z)`. One sentence
   on this in `two_level.pdf`. No change to the solvers.
