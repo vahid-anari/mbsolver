@@ -4,7 +4,7 @@ Each version is a Git tag (`vX.Y.Z`) and is on [PyPI](https://pypi.org/project/m
 Pushing a tag publishes a GitHub Release with that version's notes, and Zenodo
 then gives the release its own DOI.
 
-## Unreleased
+## 0.7.0 — 2026-11-17
 
 - **Breaking:** `mbsolver.three_level` now solves the Λ, V and ladder configurations
   (`solve_1d(config="lambda" | "v" | "ladder", ...)`). Each allowed transition has its own coupling
