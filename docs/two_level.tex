@@ -543,7 +543,7 @@ The cooperation time is therefore inversely proportional to $n_0$, $L$,
 and $\Gamma$. For a sufficiently dense and inverted medium, $T_R \ll T_1, T_2$
 and the system enters the superradiant regime \cite{Dicke1954,GrossHaroche1982}.
 The function
-\code{mbsolver.scaling} computes $T_R$, $\eta$ and the other scales from
+\code{mbsolver.two\_level.scaling} computes $T_R$, $\eta$ and the other scales from
 $\nu$, $\Gamma$, $\T$, $L$ and $n_0$ (Section~\ref{sec:code}).
 
 \begin{notebox}
@@ -637,7 +637,7 @@ arguments and returns the same result.
 \end{tabular}
 \end{center}
 
-\code{mbsolver.scaling(nu, gamma, t0, l, n0)} takes $\nu = \omega/2\pi$,
+\code{mbsolver.two\_level.scaling(nu, gamma, t0, l, n0)} takes $\nu = \omega/2\pi$,
 $\Gamma$, $\T$, $L$ and $n_0$ in SI units and returns $\eta = \T/T_R$
 (Eq.~\ref{eq:TRgamma}), $\theta_0 = 2/\sqrt{N}$ with $N = n_0\lambda L^2$,
 and the scales $E_0$, $P_0$, $I_0$ (and their magnetic counterparts

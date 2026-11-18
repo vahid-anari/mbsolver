@@ -4,6 +4,13 @@ Each version is a Git tag (`vX.Y.Z`) and is on [PyPI](https://pypi.org/project/m
 Pushing a tag publishes a GitHub Release with that version's notes, and Zenodo
 then gives the release its own DOI.
 
+## 0.8.0 — 2026-11-17
+
+- **Breaking:** the two-level `scaling` moved from `mbsolver.scaling` to `mbsolver.two_level.scaling`,
+  next to `mbsolver.three_level.scaling`; each model now has its `solve_1d` and its `scaling` in its own
+  subpackage. The function and its results are unchanged; change `mbsolver.scaling(...)` to
+  `from mbsolver.two_level import scaling`.
+
 ## 0.7.0 — 2026-11-17
 
 - **Breaking:** `mbsolver.three_level` now solves the Λ, V and ladder configurations

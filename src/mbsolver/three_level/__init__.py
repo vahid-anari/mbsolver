@@ -38,7 +38,7 @@ import numpy as np
 from mbsolver.grids import grids_1d
 from mbsolver.profiles import Pulse, Steps, evaluate
 from mbsolver.three_level._kernel_1d import LADDER, LAMBDA, V, solve_kernel
-from mbsolver.three_level.sample import scaling
+from mbsolver.three_level.scales import scaling
 
 __all__ = ["CONFIGS", "Result", "solve_1d", "scaling"]
 

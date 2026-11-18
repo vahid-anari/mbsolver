@@ -152,17 +152,16 @@ three configurations, initial conditions and physical scales, is in
 
 ## From physical values: `scaling` (two-level)
 
-The solvers take dimensionless parameters. `mbsolver.scaling` computes them for the two-level model from the
+The solvers take dimensionless parameters. `mbsolver.two_level.scaling` computes them for the two-level model from the
 physical sample values (SI units): transition frequency `nu` (Hz), spontaneous
 decay rate `gamma` (s⁻¹), time unit `t0` (s), length `l` (m) and inverted
 population density `n0` (m⁻³).
 
 ```python
 import math
-import mbsolver
-from mbsolver.two_level import solve_1d
+from mbsolver.two_level import scaling, solve_1d
 
-s = mbsolver.scaling(nu=1.0e9, gamma=1.0e-8, t0=1.0e4, l=1.0e12, n0=1.0e-5)   # η ≈ 10.7
+s = scaling(nu=1.0e9, gamma=1.0e-8, t0=1.0e4, l=1.0e12, n0=1.0e-5)   # η ≈ 10.7
 res = solve_1d(t_max=100, nt=20001, nz=101, eta=s["eta"], theta0=s["theta0"],
                t1=math.inf, t2=math.inf)
 ```

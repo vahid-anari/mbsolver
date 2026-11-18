@@ -1,10 +1,10 @@
-"""Tests for mbsolver.scaling (physical sample -> solver parameters)."""
+"""Tests for mbsolver.two_level.scaling (physical sample -> solver parameters)."""
 
 import math
 
 import pytest
 
-import mbsolver
+from mbsolver.two_level import scaling
 from mbsolver.constants import C, PI
 
 SAMPLE = dict(nu=6668.519e6, gamma=1.56e-9, t0=86400.0, l=7.5e12, n0=5.3e-7)
@@ -31,14 +31,14 @@ REFERENCE = {
 
 
 def test_matches_studio():
-    s = mbsolver.scaling(**SAMPLE)
+    s = scaling(**SAMPLE)
     assert sorted(s) == sorted(REFERENCE)
     for key, value in REFERENCE.items():
         assert s[key] == pytest.approx(value, rel=1e-13), key
 
 
 def test_relations():
-    s = mbsolver.scaling(**SAMPLE)
+    s = scaling(**SAMPLE)
     assert s["eta"] == pytest.approx(SAMPLE["t0"] / s["t_r"], rel=1e-15)
     assert s["theta0"] == pytest.approx(2.0 / math.sqrt(s["N"]), rel=1e-15)
     assert s["lambda"] == pytest.approx(C / SAMPLE["nu"], rel=1e-15)
@@ -48,14 +48,14 @@ def test_relations():
 
 
 def test_eta_scales_with_length_and_density():
-    s1 = mbsolver.scaling(**SAMPLE)
-    s2 = mbsolver.scaling(**{**SAMPLE, "l": 2 * SAMPLE["l"], "n0": 3 * SAMPLE["n0"]})
+    s1 = scaling(**SAMPLE)
+    s2 = scaling(**{**SAMPLE, "l": 2 * SAMPLE["l"], "n0": 3 * SAMPLE["n0"]})
     assert s2["eta"] == pytest.approx(6 * s1["eta"], rel=1e-14)
 
 
 def test_feeds_the_solver():
     from mbsolver.two_level import solve_1d
 
-    s = mbsolver.scaling(**SAMPLE)
+    s = scaling(**SAMPLE)
     res = solve_1d(t_max=10, nt=101, nz=11, eta=s["eta"], theta0=s["theta0"], t1=math.inf, t2=math.inf)
     assert res.intensity.shape == (2, 101)

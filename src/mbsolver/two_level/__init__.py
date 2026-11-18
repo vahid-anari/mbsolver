@@ -23,8 +23,9 @@ from mbsolver.grids import grids_1d
 from mbsolver.profiles import Pulse, Steps, evaluate
 from mbsolver.two_level._kernel_1d import solve_kernel
 from mbsolver.two_level._kernel_adiabatic_1d import solve_kernel as _solve_kernel_adiabatic
+from mbsolver.two_level.scales import scaling
 
-__all__ = ["Result", "solve_1d", "solve_1d_adiabatic"]
+__all__ = ["Result", "scaling", "solve_1d", "solve_1d_adiabatic"]
 
 
 @dataclass(frozen=True)

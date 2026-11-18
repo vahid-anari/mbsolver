@@ -9,7 +9,7 @@ authors:
   - family-names: Rashidi
     given-names: Toktam
     orcid: "https://orcid.org/0009-0007-2978-7985"
-version: 0.7.0
+version: 0.8.0
 date-released: 2026-11-17
 license: MIT
 doi: 10.5281/zenodo.23407483

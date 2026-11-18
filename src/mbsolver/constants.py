@@ -1,4 +1,4 @@
-"""Physical constants in SI units, used by :mod:`mbsolver.sample`."""
+"""Physical constants in SI units, used by :mod:`mbsolver.two_level.scales` and :mod:`mbsolver.three_level.scales`."""
 
 import math
 

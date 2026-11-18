@@ -2,15 +2,14 @@
 
 The solvers work in dimensionless units: time in units of ``T0``, the medium
 from ``z = 0`` to ``z = 1``. :func:`scaling` turns the physical values of a
-maser sample into the coupling ``eta`` and initial Bloch angle ``theta0`` the
+two-level sample into the coupling ``eta`` and initial Bloch angle ``theta0`` the
 solvers take, together with the other derived scales::
 
     import math
-    import mbsolver
-    from mbsolver.two_level import solve_1d
+    from mbsolver.two_level import scaling, solve_1d
 
-    s = mbsolver.scaling(nu=6.67e9, gamma=1.56e-9, t0=86400, l=7.5e12, n0=5.3e-7)
-    res = solve_1d(t_max=2000, nt=20001, nz=101, eta=s["eta"], theta0=s["theta0"],
+    s = scaling(nu=1.0e9, gamma=1.0e-8, t0=1.0e4, l=1.0e12, n0=1.0e-5)
+    res = solve_1d(t_max=100, nt=20001, nz=101, eta=s["eta"], theta0=s["theta0"],
                    t1=math.inf, t2=math.inf)
 """
 
